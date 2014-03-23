@@ -1,0 +1,13 @@
+/fig
+/lib
+/output
+/state
+/cache/*.gz
+/classes
+
+.classpath
+.project
+*.cache
+*.pyc
+*.bak
+*~
