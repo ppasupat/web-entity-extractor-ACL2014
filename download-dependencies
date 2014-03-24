@@ -1,6 +1,10 @@
 #!/usr/bin/ruby
 
-$modules = [:core]
+$modules = [:core,
+            :ling,
+            :dataset_demo,
+            :dataset_openweb,
+            ]
 
 def usage
   puts "Usage: ./download-dependencies <#{$modules.join('|')}>"
