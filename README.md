@@ -1,4 +1,4 @@
-# Open semantic parsing
+# open-sempre
 
 To set things up:
 
