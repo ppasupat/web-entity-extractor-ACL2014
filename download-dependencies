@@ -25,7 +25,7 @@ end
 
 def download(release, path, baseUrl='http://nlp.stanford.edu/software/open-sempre')
   url = baseUrl + '/release-' + release.to_s
-  isDirectory = false
+  isDirectory = (path.end_with?('.cache'))  # Superficial test for directory
   if release != :code and !path.end_with?('.gz', '.tgz', '.jar')
     path += '.tar' if isDirectory
     path += '.bz2'
