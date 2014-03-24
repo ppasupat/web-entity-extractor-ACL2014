@@ -3,6 +3,7 @@
 /output
 /state
 /cache/*.gz
+/datasets/*/
 /classes
 
 .classpath
