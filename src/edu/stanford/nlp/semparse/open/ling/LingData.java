@@ -58,8 +58,8 @@ public class LingData {
     @Option(gloss = "Linguistic cache filename")
     public String lingCacheFilename = null;
     
-    @Option(gloss = "Whether to save linguistic cache periodically")
-    public boolean saveLingCacheOften = true;
+    @Option(gloss = "Frequency of saving linguistic cache periodically")
+    public int saveLingCacheFrequency = 50000;
   }
   public static Options opts = new Options();
   public static StanfordCoreNLP pipeline = null;
@@ -278,9 +278,9 @@ public class LingData {
     if (data == null) {
       data = new LingData(string);
       cache.put(string, data);
-      if (cache.size() % 5000 == 0) {
+      if (opts.saveLingCacheFrequency > 0 && cache.size() % opts.saveLingCacheFrequency == 0) {
         LogInfo.logs("Linguistic Cache size: %d", cache.size());
-        if (opts.saveLingCacheOften) saveCache();
+        saveCache();
       }
     }
     return data;

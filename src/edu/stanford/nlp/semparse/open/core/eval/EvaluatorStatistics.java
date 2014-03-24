@@ -78,8 +78,8 @@ public class EvaluatorStatistics {
     logAverageSingle(avgF1onExpectedEntitiesL, prefix + ".averageF1onTargetEntities", "Average F1 (vs target entities)");
     logAverageSingle(avgF1onBestL, prefix + ".averageF1onBestCandidate", "Average F1 (vs best candidate)");
     // Ignore accuracy at 0 (which is always 0)
-    Execution.putOutput(prefix + ".accuracyAtK", ListUtils.subArray(accuracyAtK, 1));
-    Execution.putOutput(prefix + ".accuracyAtKSD", ListUtils.subArray(accuracyAtKSD, 1));
+    Execution.putOutput(prefix + ".accuracyAtK", Fmt.D(ListUtils.subArray(accuracyAtK, 1)));
+    Execution.putOutput(prefix + ".accuracyAtKSD", Fmt.D(ListUtils.subArray(accuracyAtKSD, 1)));
     LogInfo.logs("Accuracy @ k : %s", Fmt.D(ListUtils.mult(100.0, ListUtils.subArray(accuracyAtK, 1))));
     LogInfo.logs("            +- %s", Fmt.D(ListUtils.mult(100.0, ListUtils.subArray(accuracyAtKSD, 1))));
     LogInfo.end_track();

@@ -7,7 +7,7 @@ system "mkdir -p cache"
 
 run!(
   # For running in a queue
-  letDefault(:q, 0), sel(:q, l(), l('fig/bin/q', '-shareWorkingPath', o('masterHost', 'jackson'), o('mem', '5g'), o('memGrace', 10), '-add', '---')),
+  letDefault(:q, 0), sel(:q, l(), l('fig/bin/q', '-shareWorkingPath', o('mem', '5g'), o('memGrace', 10), '-add', '---')),
 
   # Profiling
   letDefault(:prof, 0), sel(:prof, l(), '-Xrunhprof:cpu=samples,depth=100,file=_OUTPATH_/java.hprof.txt'),
@@ -15,6 +15,7 @@ run!(
   'fig/bin/qcreate', o('statePath', 'state'),
   'java', '-cp', 'classes:lib/*',
 
+  # Set memory size
   letDefault(:memsize, 'tiny'),
   sel(:memsize, {
     'tiny' => l('-Xms2G', '-Xmx4G'),
@@ -29,9 +30,6 @@ run!(
   sel(:mode, {
     'main' => l(
       'edu.stanford.nlp.semparse.open.Main',
-    nil),
-    'experiment' => l(
-      'edu.stanford.nlp.semparse.open.experiment.Experiments',
     nil),
     'interactive' => l(
       'edu.stanford.nlp.semparse.open.Main',
@@ -63,7 +61,7 @@ run!(
     l(o('brownClusterFilename', 'lib/wordreprs/brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt')), # default
   nil),
 
-  sel(1,
+  sel(0,
     l(), # Don't use word vectors
     l(o('wordVectorFilename', 'lib/wordreprs/embeddings-scaled.EMBEDDING_SIZE=50.txt')), # default
     l(o('wordVectorFilename', 'lib/cbow.vectors'), o('wordVectorUNKindex', -1)), # CBOW
@@ -84,34 +82,8 @@ run!(
     l(o('lateNorm', 3), o('targetNorm', 3)),
   nil),
 
+  # Dataset
   sel(:data, {
-    'wiki' => l(
-      o('execPoolDir', 'state/execs'),
-      o('dataset', 'wiki.clean-200'),
-      # o('ircriterion', 'f1'),
-    nil),
-
-    'wikidebug' => l(
-      o('dataset', 'wiki.debug'),
-      # o('ircriterion', 'f1'),
-    nil),
-
-    'webdebug' => l(
-      o('dataset', 'web.debug'),
-    nil),
-
-    'webdev' => l(
-      o('dataset', 'web.1+2+4+5+6dev'),
-    nil),
-
-    'webreal' => l(
-      o('dataset', 'web.1+2+4+5+6dev@6pristine'),
-    nil),
-
-    'tiny' => l(
-      o('dataset', 'web.tiny'),
-    nil),
-
     'demo' => l(
       o('dataset', 'demo.30-examples'),
     nil),

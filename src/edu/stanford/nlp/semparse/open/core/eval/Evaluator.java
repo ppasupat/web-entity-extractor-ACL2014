@@ -98,7 +98,7 @@ public class Evaluator {
     Execution.putOutput(prefix + ".oracle", 1.0 * numFound / numExamples);
     Execution.putOutput(prefix + ".averageF1onTargetEntities", sumF1onExpectedEntities * 1.0 / numExamples);
     Execution.putOutput(prefix + ".averageF1onBestCandidate", sumF1onBest * 1.0 / numExamples);
-    Execution.putOutput(prefix + ".accuracyAtK", ListUtils.subArray(getAccuracyAtK(10), 1));
+    Execution.putOutput(prefix + ".accuracyAtK", Fmt.D(ListUtils.subArray(getAccuracyAtK(10), 1)));
     return this;
   }
   
