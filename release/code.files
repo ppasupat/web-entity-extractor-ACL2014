@@ -7,6 +7,9 @@
 # Release specs (used by download-dependencies)
 release/code.files
 release/core.files
+release/ling.files
+release/dataset_demo.files
+release/dataset_openweb.files
 
 # Documentation and Makefile
 Makefile

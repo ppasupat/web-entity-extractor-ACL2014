@@ -1,0 +1,15 @@
+# This file contains all the linguistic data files.
+#
+# These files are hosted on the Stanford NLP web endpoint and are
+# intended to be obtained via the command
+#
+#     ./download-dependencies ling
+#
+
+# wordreprs (Turian et al.)
+lib/wordreprs/brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt
+lib/wordreprs/embeddings-scaled.EMBEDDING_SIZE=50.txt
+
+# Others
+lib/ling-data/webFrequency.tsv
+lib/ling-data/wordnet/newer-30

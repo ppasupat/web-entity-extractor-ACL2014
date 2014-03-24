@@ -1,0 +1,12 @@
+# The OpenWeb dataset
+#
+# These files are hosted on the Stanford NLP web endpoint and are
+# intended to be obtained via the command
+#
+#     ./download-dependencies dataset-openweb
+#
+
+datasets/openweb/train.json
+datasets/openweb/test.json
+datasets/openweb/train.cache
+datasets/openweb/test.cache
