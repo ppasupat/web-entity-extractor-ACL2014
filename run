@@ -76,7 +76,7 @@ run!(
 
   sel(1,
     l(), # Don't use wordnet clusters
-    l(o('wordnetClusterFilename', 'lib/ling-data/wordnet/30')), # default
+    l(o('wordnetClusterFilename', 'lib/ling-data/wordnet/newer-30')), # default
   nil),
 
   sel(1,
