@@ -19,6 +19,12 @@ download-dependencies
 cache/README
 datasets/README
 
+# Ruby utils: execrunner script etc.
+fig/bin/qcreate
+fig/bin/chunk
+fig/lib/execrunner.rb
+fig/lib/myutils.rb
+
 # Scripts for Downloading Web Pages
 scripts/README
 scripts/google-search.py
