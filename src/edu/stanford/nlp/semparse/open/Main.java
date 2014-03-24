@@ -15,6 +15,7 @@ import edu.stanford.nlp.semparse.open.core.InteractiveDemo;
 import edu.stanford.nlp.semparse.open.core.OpenSemanticParser;
 import edu.stanford.nlp.semparse.open.core.ParallelizedTrainer;
 import edu.stanford.nlp.semparse.open.core.eval.Evaluator;
+import edu.stanford.nlp.semparse.open.core.eval.EvaluatorStatistics;
 import edu.stanford.nlp.semparse.open.core.eval.IterativeTester;
 import edu.stanford.nlp.semparse.open.dataset.Dataset;
 import edu.stanford.nlp.semparse.open.dataset.ExpectedAnswer;
@@ -258,13 +259,13 @@ public class Main implements Runnable {
     for (int i = 0; i < opts.folds; i++)
       iterativeTesters.get(i).summarize();
     if (opts.folds > 1) {
-      List<IterativeTester.EvaluatorStatistics> trainStats = Lists.newArrayList(), testStats = Lists.newArrayList();
+      List<EvaluatorStatistics> trainStats = Lists.newArrayList(), testStats = Lists.newArrayList();
       for (IterativeTester tester : iterativeTesters) {
         trainStats.add(tester.getLastTrainStat());
         testStats.add(tester.getLastTestStat());
       }
-      IterativeTester.EvaluatorStatistics.logAverage(trainStats, "train");
-      IterativeTester.EvaluatorStatistics.logAverage(testStats, "test");
+      EvaluatorStatistics.logAverage(trainStats, "train");
+      EvaluatorStatistics.logAverage(testStats, "test");
     }
   }
 

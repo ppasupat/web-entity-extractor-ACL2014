@@ -8,6 +8,8 @@ import com.google.common.collect.Multiset;
 
 import edu.stanford.nlp.semparse.open.dataset.Example;
 import edu.stanford.nlp.semparse.open.model.Learner;
+import fig.basic.Fmt;
+import fig.basic.ListUtils;
 import fig.basic.LogInfo;
 import fig.exec.Execution;
 
@@ -70,13 +72,13 @@ public class Evaluator {
     return evaluationCase;
   }
   
-  public List<Double> getAccuracyAtK(int maxK) {
-    List<Double> accuracyAtK = Lists.newArrayList();
-    accuracyAtK.add(0.0);   // Accuracy at 0 is always 0
+  public double[] getAccuracyAtK(int maxK) {
+    double[] accuracyAtK = new double[maxK + 1];
+    accuracyAtK[0] = 0.0;     // Accuracy at 0 is always 0 (used for padding)
     int sumCorrect = 0;
     for (int k = 1; k <= maxK; k++) {
       sumCorrect += firstTrueUniqueRanks.count(k);
-      accuracyAtK.add(sumCorrect * 1.0 / numExamples);
+      accuracyAtK[k] = sumCorrect * 1.0 / numExamples;
     }
     return accuracyAtK;
   }
@@ -96,7 +98,7 @@ public class Evaluator {
     Execution.putOutput(prefix + ".oracle", 1.0 * numFound / numExamples);
     Execution.putOutput(prefix + ".averageF1onTargetEntities", sumF1onExpectedEntities * 1.0 / numExamples);
     Execution.putOutput(prefix + ".averageF1onBestCandidate", sumF1onBest * 1.0 / numExamples);
-    Execution.putOutput(prefix + ".accuracyAtK", getAccuracyAtK(10).subList(1, 11));
+    Execution.putOutput(prefix + ".accuracyAtK", ListUtils.subArray(getAccuracyAtK(10), 1));
     return this;
   }
   
@@ -111,7 +113,7 @@ public class Evaluator {
     LogInfo.logs("Accuracy (vs found): %.3f%% ( %d / %d )", numSuccess * 100.0 / numFound, numSuccess, numFound);
     LogInfo.logs("Average F1 (vs target entities): %.3f%%", sumF1onExpectedEntities * 100.0 / numExamples);
     LogInfo.logs("Average F1 (vs best candidate): %.3f%%", sumF1onBest * 100.0 / numExamples);
-    LogInfo.logs("Accuracy @ k : %s", getAccuracyAtK(10).subList(1, 11));
+    LogInfo.logs("Accuracy @ k : %s", Fmt.D(ListUtils.mult(100.0, ListUtils.subArray(getAccuracyAtK(10), 1))));
     LogInfo.end_track();
     return this;
   }

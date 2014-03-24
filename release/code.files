@@ -12,9 +12,9 @@ release/dataset_demo.files
 release/dataset_openweb.files
 
 # Documentation and Makefile
+open-sempre
 Makefile
 README.md
-run
 download-dependencies
 cache/README
 datasets/README
@@ -58,6 +58,7 @@ src/edu/stanford/nlp/semparse/open/core/eval/EvaluationNormalFail.java
 src/edu/stanford/nlp/semparse/open/core/eval/EvaluationSuccess.java
 src/edu/stanford/nlp/semparse/open/core/eval/EvaluationSuperFail.java
 src/edu/stanford/nlp/semparse/open/core/eval/Evaluator.java
+src/edu/stanford/nlp/semparse/open/core/eval/EvaluatorStatistics.java
 src/edu/stanford/nlp/semparse/open/core/eval/IterativeTester.java
 
 # Dataset Reader + Data Structure
