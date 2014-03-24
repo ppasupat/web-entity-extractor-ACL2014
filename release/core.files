@@ -1,0 +1,31 @@
+# This file contains all the basic data and software dependencies on
+# which the public code release relies to compile, build, and run in
+# general.
+#
+# These files are hosted on the Stanford NLP web endpoint and are
+# intended to be obtained via the command
+#
+#     ./download-dependencies core
+#
+
+# Fig
+lib/fig.jar
+
+# Guava (Google Libraries)
+lib/guava-16.0.1.jar
+
+# JSON
+lib/jackson-core-2.3.2.jar
+lib/jackson-databind-2.3.2.jar
+lib/jackson-annotations-2.3.2.jar
+
+# HTML Parser
+lib/jsoup-1.7.3.jar
+
+# Stanford CoreNLP
+lib/stanford-corenlp-3.3.1.jar
+lib/stanford-corenlp-3.3.1-models.jar
+lib/joda-time.jar
+lib/jollyday.jar
+lib/stanford-corenlp-caseless-2013-11-12-models.jar
+

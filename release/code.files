@@ -1,0 +1,140 @@
+# This file contains all the source files included in the public code release.
+#
+# These files go into the public github repo.
+
+############################################################
+
+# Release specs (used by download-dependencies)
+release/code.files
+release/core.files
+
+# Documentation and Makefile
+Makefile
+README.md
+run
+download-dependencies
+cache/README
+datasets/README
+
+# Scripts for Downloading Web Pages
+scripts/README
+scripts/google-search.py
+scripts/get-webpage.py
+scripts/fake-google-search.py
+
+# Web Utilities
+scripts/weblib/__init__.py
+scripts/weblib/tee.py
+scripts/weblib/blacklist.py
+scripts/weblib/web.py
+
+# Symlinks
+scripts/datasets
+scripts/weblib/external
+
+############################################################
+
+# Main Entry
+src/edu/stanford/nlp/semparse/open/Main.java
+
+# Core Functionalities
+src/edu/stanford/nlp/semparse/open/core/InteractiveDemo.java
+src/edu/stanford/nlp/semparse/open/core/OpenSemanticParser.java
+src/edu/stanford/nlp/semparse/open/core/ParallelizedTrainer.java
+
+# Evaluation
+src/edu/stanford/nlp/semparse/open/core/eval/CandidateStatistics.java
+src/edu/stanford/nlp/semparse/open/core/eval/EvaluationCase.java
+src/edu/stanford/nlp/semparse/open/core/eval/EvaluationNormalFail.java
+src/edu/stanford/nlp/semparse/open/core/eval/EvaluationSuccess.java
+src/edu/stanford/nlp/semparse/open/core/eval/EvaluationSuperFail.java
+src/edu/stanford/nlp/semparse/open/core/eval/Evaluator.java
+src/edu/stanford/nlp/semparse/open/core/eval/IterativeTester.java
+
+# Dataset Reader + Data Structure
+src/edu/stanford/nlp/semparse/open/dataset/Criteria.java
+src/edu/stanford/nlp/semparse/open/dataset/CriteriaExactMatch.java
+src/edu/stanford/nlp/semparse/open/dataset/CriteriaGeneralWeb.java
+src/edu/stanford/nlp/semparse/open/dataset/Dataset.java
+src/edu/stanford/nlp/semparse/open/dataset/Example.java
+src/edu/stanford/nlp/semparse/open/dataset/ExampleCached.java
+src/edu/stanford/nlp/semparse/open/dataset/ExpectedAnswer.java
+src/edu/stanford/nlp/semparse/open/dataset/ExpectedAnswerCriteriaMatch.java
+src/edu/stanford/nlp/semparse/open/dataset/ExpectedAnswerInjectiveMatch.java
+src/edu/stanford/nlp/semparse/open/dataset/IRScore.java
+src/edu/stanford/nlp/semparse/open/dataset/entity/TargetEntity.java
+src/edu/stanford/nlp/semparse/open/dataset/entity/TargetEntityNearMatch.java
+src/edu/stanford/nlp/semparse/open/dataset/entity/TargetEntityPersonName.java
+src/edu/stanford/nlp/semparse/open/dataset/entity/TargetEntityString.java
+src/edu/stanford/nlp/semparse/open/dataset/entity/TargetEntitySubstring.java
+src/edu/stanford/nlp/semparse/open/dataset/library/DatasetLibrary.java
+src/edu/stanford/nlp/semparse/open/dataset/library/JSONDataset.java
+src/edu/stanford/nlp/semparse/open/dataset/library/JSONDatasetReader.java
+src/edu/stanford/nlp/semparse/open/dataset/library/UnaryDatasets.java
+
+# Linguistics Data
+src/edu/stanford/nlp/semparse/open/ling/AveragedWordVector.java
+src/edu/stanford/nlp/semparse/open/ling/BrownClusterTable.java
+src/edu/stanford/nlp/semparse/open/ling/ClusterRepnUtils.java
+src/edu/stanford/nlp/semparse/open/ling/CreateTypeEntityFeatures.java
+src/edu/stanford/nlp/semparse/open/ling/FrequencyTable.java
+src/edu/stanford/nlp/semparse/open/ling/LingData.java
+src/edu/stanford/nlp/semparse/open/ling/LingTester.java
+src/edu/stanford/nlp/semparse/open/ling/LingUtils.java
+src/edu/stanford/nlp/semparse/open/ling/WordNetClusterTable.java
+src/edu/stanford/nlp/semparse/open/ling/WordVectorTable.java
+
+# Learner / Params
+src/edu/stanford/nlp/semparse/open/model/AdvancedWordVectorGradient.java
+src/edu/stanford/nlp/semparse/open/model/AdvancedWordVectorParams.java
+src/edu/stanford/nlp/semparse/open/model/AdvancedWordVectorParamsFullRank.java
+src/edu/stanford/nlp/semparse/open/model/AdvancedWordVectorParamsLowRank.java
+src/edu/stanford/nlp/semparse/open/model/FeatureCountPruner.java
+src/edu/stanford/nlp/semparse/open/model/FeatureDomainPruner.java
+src/edu/stanford/nlp/semparse/open/model/FeatureMatcher.java
+src/edu/stanford/nlp/semparse/open/model/FeatureVector.java
+src/edu/stanford/nlp/semparse/open/model/Learner.java
+src/edu/stanford/nlp/semparse/open/model/LearnerBaseline.java
+src/edu/stanford/nlp/semparse/open/model/LearnerMaxEnt.java
+src/edu/stanford/nlp/semparse/open/model/LearnerMaxEntWithBeamSearch.java
+src/edu/stanford/nlp/semparse/open/model/Params.java
+
+# Candidate Data Structure
+src/edu/stanford/nlp/semparse/open/model/candidate/Candidate.java
+src/edu/stanford/nlp/semparse/open/model/candidate/CandidateGenerator.java
+src/edu/stanford/nlp/semparse/open/model/candidate/CandidateGroup.java
+src/edu/stanford/nlp/semparse/open/model/candidate/PathEntry.java
+src/edu/stanford/nlp/semparse/open/model/candidate/PathEntryWithRange.java
+src/edu/stanford/nlp/semparse/open/model/candidate/PathUtils.java
+src/edu/stanford/nlp/semparse/open/model/candidate/TreePattern.java
+src/edu/stanford/nlp/semparse/open/model/candidate/TreePatternAndRange.java
+
+# Features
+src/edu/stanford/nlp/semparse/open/model/feature/FeatureExtractor.java
+src/edu/stanford/nlp/semparse/open/model/feature/FeatureType.java
+src/edu/stanford/nlp/semparse/open/model/feature/FeatureTypeCutRange.java
+src/edu/stanford/nlp/semparse/open/model/feature/FeatureTypeHoleBased.java
+src/edu/stanford/nlp/semparse/open/model/feature/FeatureTypeLinguisticsBased.java
+src/edu/stanford/nlp/semparse/open/model/feature/FeatureTypeNaiveEntityBased.java
+src/edu/stanford/nlp/semparse/open/model/feature/FeatureTypeNodeBased.java
+src/edu/stanford/nlp/semparse/open/model/feature/FeatureTypePathBased.java
+src/edu/stanford/nlp/semparse/open/model/feature/FeatureTypeProximityBased.java
+src/edu/stanford/nlp/semparse/open/model/feature/FeatureTypeQueryBased.java
+
+# DOM Tree
+src/edu/stanford/nlp/semparse/open/model/tree/HTMLFixer.java
+src/edu/stanford/nlp/semparse/open/model/tree/KNode.java
+src/edu/stanford/nlp/semparse/open/model/tree/KNodeUtils.java
+src/edu/stanford/nlp/semparse/open/model/tree/KnowledgeTreeBuilder.java
+
+# Utilities
+src/edu/stanford/nlp/semparse/open/util/BipartiteMatcher.java
+src/edu/stanford/nlp/semparse/open/util/EditDistance.java
+src/edu/stanford/nlp/semparse/open/util/SHA.java
+src/edu/stanford/nlp/semparse/open/util/SearchResult.java
+src/edu/stanford/nlp/semparse/open/util/StringDoubleArrayList.java
+src/edu/stanford/nlp/semparse/open/util/StringDoublePair.java
+src/edu/stanford/nlp/semparse/open/util/StringSampler.java
+src/edu/stanford/nlp/semparse/open/util/VectorAverager.java
+src/edu/stanford/nlp/semparse/open/util/WebUtils.java
+

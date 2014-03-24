@@ -1,0 +1,46 @@
+Linguistic Cache
+================
+
+A linguistic cache stores the CoreNLP tagging of phrases.
+They are gzip-ed JSON files of the format
+
+    {
+      "phrase1": { ... (data) ... },
+      "phrase2": { ... (data) ... },
+      ...
+    }
+
+where (data) may differ between cache versions.
+
+Version 2
+---------
+
+    {
+      "coreNLPTags": {
+        "tokens": [...],
+        "lemmaTokens": [...],
+        "posTags": [...],
+        "nerTags": [...],
+        "nerValues": [...],
+      },
+      "isOpenClassPOS": [...],
+      "brownClusters": [...]
+    }
+ 
+Version 3 & 4
+-------------
+
+    {
+      "tokens": [...],
+      "lemmaTokens": [...],
+      "posTags": [...],
+      "posTypes": [...],
+      "nerTags": [...],
+      "nerValues": [...]
+    }
+
+To convert the BUGGY v3 to CORRECT v4, use
+   convert3to4.py [V3CACHE.v3.json.gz]
+
+Unfortunately, posTags of v3 contains more information than v2, so v2
+cannot be converted to v3 directly.

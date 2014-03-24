@@ -1,0 +1,17 @@
+Python scripts for getting data from the Web or loading the cached web pages.
+
+Scripts
+-------
+
+google-search.py
+  Perform Google search using Google Custom Search
+
+fake-google-search.py
+  Fake Google search by looking from the cached results instead
+
+get-webpage.py
+  Either
+  - Download the web page from the specified URL, or
+  - Get the cached web page corresponding to the specified hash code
+    from the specified cache directory.
+  Then, dump the result to standard output

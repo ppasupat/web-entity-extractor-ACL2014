@@ -1,0 +1,14 @@
+Datasets directory
+------------------
+
+Call
+    ./download-dependencies [datasetName]
+to download a dataset into this directory.
+
+Directory structure:
+
+datasets/
+|- [datasetFamily]
+   |- [datasetName].json   <-- contains the queries and answers
+   |- [webpageCacheDirectory].cache   <-- stores cached web pages
+      |- [hashcode]        <-- contains a single web page
