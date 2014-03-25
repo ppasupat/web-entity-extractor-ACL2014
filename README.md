@@ -1,10 +1,10 @@
-# open-sempre
+# Web Entity Extractor
 
-**open-sempre** is a framework for extracting entities from a given search query and web page.
+This repository contains a toolkit for extracting entities from a given search query and web page.
 
 ## Requirements
 
-open-sempre requires the following:
+The requirements for running the code include:
 
 * Java 7
 * Ruby 1.8.7 or 1.9
@@ -19,7 +19,7 @@ Other required libraries and resources can be downloaded using the following com
 
 ## Compiling
 
-Run the following commands to compile:
+Run the following commands to download necessary libraries and compile:
 
     ./download-depenencies core
     ./download-depenencies ling
@@ -30,14 +30,15 @@ Run the following commands to compile:
 To train and test on the demo dataset using the default features, run
 
     ./download-depenencies dataset_demo
-    ./open-sempre @mode=main @data=demo @feat=test
+    ./web-entity-extractor @mode=main @data=demo @feat=test
 
 For the OpenWeb dataset, make sure the system has enough RAM (~40GB recommended) and run
 
     ./download-depenencies dataset_openweb
-    ./open-sempre @memsize=high @mode=main @data=dev @feat=test -numThreads 0 -fold 3
+    ./web-entity-extractor @memsize=high @mode=main @data=dev @feat=test -numThreads 0 -fold 3
 
-The flag `-numThreads 0` uses all CPUs available, while `-fold 3` runs the system on 3 random splits of the dataset. Note that the system may take a long time on the first run to cache all linguistic data.
+The flag `-numThreads 0` uses all CPUs available, while `-fold 3` runs the system on 3 random splits of the dataset.
+Note that the system may take a long time on the first run to cache all linguistic data.
 
 ## Interactive Mode
 
@@ -45,8 +46,8 @@ The interactive mode allows the user to apply the trained model on any query and
 
 To use the interactive mode, first train and save a model by adding `-saveModel [FILENAME]` to one of the commands above, and then run
 
-    ./open-sempre @mode=interactive -loadModel [FILENAME]
+    ./web-entity-extractor @mode=interactive -loadModel [FILENAME]
 
 ## License
 
-open-sempre is under the GNU General Public License (v2). See the `LICENSE` file for the full license.
+The code is under the GNU General Public License (v2). See the `LICENSE` file for the full license.

@@ -23,7 +23,8 @@ def run(command)
   end
 end
 
-def download(release, path, baseUrl='http://nlp.stanford.edu/software/open-sempre')
+BASE_URL = 'http://nlp.stanford.edu/software/web-entity-extractor-ACL2014/'
+def download(release, path, baseUrl=BASE_URL)
   url = baseUrl + '/release-' + release.to_s
   isDirectory = (path.end_with?('.cache'))  # Superficial test for directory
   if release != :code and !path.end_with?('.gz', '.tgz', '.jar')
