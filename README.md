@@ -12,12 +12,12 @@ open-sempre requires the following:
 
 Other required libraries and resources can be downloaded using the following commands:
 
-* `download-depenencies core`: download required Java libraries
-* `download-depenencies ling`: download linguistic resources
-* `download-depenencies dataset_demo`: download a small dataset for testing the installation
-* `download-depenencies dataset_openweb`: download the OpenWeb dataset, which contains diverse queries and web pages
+* `./download-depenencies core`: download required Java libraries
+* `./download-depenencies ling`: download linguistic resources
+* `./download-depenencies dataset_demo`: download a small dataset for testing the installation
+* `./download-depenencies dataset_openweb`: download the OpenWeb dataset, which contains diverse queries and web pages
 
-## Compilation
+## Compiling
 
 Run the following commands to compile:
 
@@ -29,13 +29,15 @@ Run the following commands to compile:
 
 To train and test on the demo dataset using the default features, run
 
+    ./download-depenencies dataset_demo
     ./open-sempre @mode=main @data=demo @feat=test
 
 For the OpenWeb dataset, make sure the system has enough RAM (~40GB recommended) and run
 
+    ./download-depenencies dataset_openweb
     ./open-sempre @memsize=high @mode=main @data=dev @feat=test -numThreads 0 -fold 3
 
-The flag `-numThreads 0` uses all CPUs available, while `-fold 3` runs the system on 3 random splits of the dataset.
+The flag `-numThreads 0` uses all CPUs available, while `-fold 3` runs the system on 3 random splits of the dataset. Note that the system may take a long time on the first run to cache all linguistic data.
 
 ## Interactive Mode
 
