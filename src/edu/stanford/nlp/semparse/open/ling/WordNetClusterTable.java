@@ -22,7 +22,7 @@ public class WordNetClusterTable {
   public static Map<String, String> wordClusterMap;
   
   public static void initModels() {
-    if (wordClusterMap != null || opts.wordnetClusterFilename == null) return;
+    if (wordClusterMap != null || opts.wordnetClusterFilename == null || opts.wordnetClusterFilename.isEmpty()) return;
     Path dataPath = Paths.get(opts.wordnetClusterFilename);
     LogInfo.logs("Reading WordNet clusters from %s", dataPath);
     try (BufferedReader in = Files.newBufferedReader(dataPath, Charsets.UTF_8)) {

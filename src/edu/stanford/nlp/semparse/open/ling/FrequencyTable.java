@@ -27,7 +27,7 @@ public class FrequencyTable {
   public static Map<Integer, Set<String>> topWordsLists;
   
   public static void initModels() {
-    if (topWordsLists != null || opts.frequencyFilename == null) return;
+    if (topWordsLists != null || opts.frequencyFilename == null || opts.frequencyFilename.isEmpty()) return;
     Path dataPath = Paths.get(opts.frequencyFilename);
     LogInfo.logs("Reading word frequency from %s", dataPath);
     List<String> words = Lists.newArrayList();

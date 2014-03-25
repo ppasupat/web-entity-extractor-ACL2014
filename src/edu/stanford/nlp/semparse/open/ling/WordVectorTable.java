@@ -27,7 +27,7 @@ public class WordVectorTable {
   public static int numWords, numDimensions;
   
   public static void initModels() {
-    if (wordVectors != null || opts.wordVectorFilename == null) return;
+    if (wordVectors != null || opts.wordVectorFilename == null || opts.wordVectorFilename.isEmpty()) return;
     Path dataPath = Paths.get(opts.wordVectorFilename);
     LogInfo.logs("Reading word vectors from %s", dataPath);
     try (BufferedReader in = Files.newBufferedReader(dataPath, Charsets.UTF_8)) {

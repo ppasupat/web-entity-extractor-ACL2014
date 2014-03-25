@@ -25,7 +25,7 @@ public class BrownClusterTable {
   public static Map<String, Integer> wordFrequencyMap;
   
   public static void initModels() {
-    if (wordClusterMap != null || opts.brownClusterFilename == null) return;
+    if (wordClusterMap != null || opts.brownClusterFilename == null || opts.brownClusterFilename.isEmpty()) return;
     Path dataPath = Paths.get(opts.brownClusterFilename);
     LogInfo.logs("Reading Brown clusters from %s", dataPath);
     try (BufferedReader in = Files.newBufferedReader(dataPath, Charsets.UTF_8)) {
