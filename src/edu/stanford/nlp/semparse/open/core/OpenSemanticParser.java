@@ -59,14 +59,17 @@ public class OpenSemanticParser {
   private IterativeTester iterativeTester;
   private KnowledgeTreeBuilder knowledgeTreeBuilder = new KnowledgeTreeBuilder();
   private CandidateGenerator candidateGenerator = new CandidateGenerator();
+  private static boolean initialized = false;
   
   public static void init() {
+    if (initialized) return;
     // Load JavaNLP and other linguistics stuff
     LingData.initModels();
     // Try to load cache
     LingData.loadCache();
     // Check the feature options
     FeatureType.checkFeatureTypeOptionsSanity();
+    initialized = true;
   }
   
   public static void cleanUp() {
@@ -96,6 +99,18 @@ public class OpenSemanticParser {
   // ============================================================
   // Preprocessing
   // ============================================================
+  
+  /**
+   * Extract the data (trees / candidates / features) in advance and cache them.
+   * It is not necessary to call this function before calling train() or test(), though.
+   */
+  public void preTrain(Dataset dataset) {
+    LogInfo.begin_track("preTrain: %d train, %d test", dataset.trainExamples.size(), dataset.testExamples.size());
+    // Process examples in the dataset
+    extractData(dataset.trainExamples);
+    extractData(dataset.testExamples);
+    LogInfo.end_track();
+  }
   
   private void extractData(List<Example> examples) {
     List<Example> toExtract = Lists.newArrayList();
@@ -144,18 +159,6 @@ public class OpenSemanticParser {
   // ============================================================
   // Train
   // ============================================================
-  
-  /**
-   * Extract the data (trees / candidates / features) in advance and cache them.
-   * It is not necessary to call this function before calling train() or test(), though.
-   */
-  public void preTrain(Dataset dataset) {
-    LogInfo.begin_track("preTrain: %d train, %d test", dataset.trainExamples.size(), dataset.testExamples.size());
-    // Process examples in the dataset
-    extractData(dataset.trainExamples);
-    extractData(dataset.testExamples);
-    LogInfo.end_track();
-  }
   
   public void train(Dataset dataset, boolean beVeryQuiet) {
     // Extract data
@@ -209,6 +212,11 @@ public class OpenSemanticParser {
     List<CandidateStatistics> rankedCandidateStats = CandidateStatistics.getRankedCandidateStats(rankedCandidates);
     CandidateStatistics pred = (rankedCandidateStats.isEmpty()) ? null : rankedCandidateStats.get(0);
     return pred;
+  }
+  
+  public List<Pair<Candidate, Double>> getRankedCandidates(Example ex) {
+    extractData(ex);
+    return learner.getRankedCandidates(ex);
   }
   
   public Evaluator test(List<Example> examples, String testSuiteName) {

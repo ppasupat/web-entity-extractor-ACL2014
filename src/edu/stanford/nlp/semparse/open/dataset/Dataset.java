@@ -69,6 +69,19 @@ public class Dataset {
     return new Dataset(newTrain, newTest);
   }
   
+  /**
+   * @return a new Dataset with the specified train/test ratio.
+   */
+  public Dataset getNewSplitDataset(double trainRatio) {
+    List<Example> allExamples = Lists.newArrayList(trainExamples);
+    allExamples.addAll(testExamples);
+    Collections.shuffle(allExamples, new Random(42));
+    int trainEndIndex = (int) (allExamples.size() * trainRatio);
+    List<Example> newTrain = allExamples.subList(0, trainEndIndex);
+    List<Example> newTest = allExamples.subList(trainEndIndex, allExamples.size());
+    return new Dataset(newTrain, newTest);
+  }
+  
   // ============================================================
   // Shorthands for creating datasets.
   // ============================================================

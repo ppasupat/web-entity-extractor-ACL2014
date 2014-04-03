@@ -270,11 +270,11 @@ public class LingUtils {
     LogInfo.log(simpleNormalize("Apollo 11 (1969) 「阿波罗」"));
     LogInfo.log(simpleNormalize("\"Apollo 11 (1969)\""));
     LogInfo.log(simpleNormalize("“Erdős café – ε’s delight”"));
+    LogInfo.log(aggressiveNormalize("“Erdős café – ε’s delight”"));
     LogInfo.log(simpleNormalize("1. 3.14 is Pi"));
     LogInfo.log(simpleNormalize("3.14"));
     LogInfo.log(simpleNormalize("314"));
-    LogInfo.log(aggressiveNormalize("“Erdős café – ε’s delight”"));
-    LogInfo.log(findHeadWord("the mentalist episodes season 2"));
+    //LogInfo.log(findHeadWord("the mentalist episodes season 2"));
   }
   
 }

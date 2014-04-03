@@ -193,6 +193,7 @@ public class LingData {
     WordVectorTable.initModels();
     FrequencyTable.initModels();
     WordNetClusterTable.initModels();
+    QueryTypeTable.initModels();
   }
 
   public static void initCoreNLPModels() {

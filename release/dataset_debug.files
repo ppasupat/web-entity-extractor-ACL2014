@@ -1,0 +1,10 @@
+# The debug dataset (contains only 30 examples)
+#
+# These files are hosted on the Stanford NLP web endpoint and are
+# intended to be obtained via the command
+#
+#     ./download-dependencies dataset-debug
+#
+
+datasets/openweb/debug.json
+scripts/frozen.cache/openweb-debug/

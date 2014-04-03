@@ -67,14 +67,32 @@ public class FeatureVector {
   public void add(FeatureVector that) { add(that, AllFeatureMatcher.matcher); }
   public void add(FeatureVector that, FeatureMatcher matcher) {
     if (that.indicatorFeatures != null) {
+      if (indicatorFeatures == null) indicatorFeatures = new ArrayList<String>();
       for (String f : that.indicatorFeatures)
         if (matcher.matches(f))
-          add(f);
+          indicatorFeatures.add(f);
     }
     if (that.generalFeatures != null) {
+      if (generalFeatures == null) generalFeatures = new StringDoubleArrayList();
       for (StringDoublePair pair : that.generalFeatures)
         if (matcher.matches(pair.getFirst()))
-          add(pair.getFirst(), pair.getSecond());
+          generalFeatures.add(pair.getFirst(), pair.getSecond());
+    }
+  }
+  
+  public void addConjoin(FeatureVector that, String prefix) { addConjoin(that, prefix, AllFeatureMatcher.matcher); }
+  public void addConjoin(FeatureVector that, String prefix, FeatureMatcher matcher) {
+    if (that.indicatorFeatures != null) {
+      if (indicatorFeatures == null) indicatorFeatures = new ArrayList<String>();
+      for (String f : that.indicatorFeatures)
+        if (matcher.matches(f))
+          indicatorFeatures.add((prefix + " " + f).intern());
+    }
+    if (that.generalFeatures != null) {
+      if (generalFeatures == null) generalFeatures = new StringDoubleArrayList();
+      for (StringDoublePair pair : that.generalFeatures)
+        if (matcher.matches(pair.getFirst()))
+          generalFeatures.add((prefix + " " + pair.getFirst()).intern(), pair.getSecond());
     }
   }
   

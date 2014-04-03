@@ -14,7 +14,7 @@ Other required libraries and resources can be downloaded using the following com
 
 * `./download-depenencies core`: download required Java libraries
 * `./download-depenencies ling`: download linguistic resources
-* `./download-depenencies dataset_demo`: download a small dataset for testing the installation
+* `./download-depenencies dataset_debug`: download a small dataset for testing the installation
 * `./download-depenencies dataset_openweb`: download the OpenWeb dataset, which contains diverse queries and web pages
 
 ## Compiling
@@ -27,15 +27,15 @@ Run the following commands to download necessary libraries and compile:
 
 ## Testing
 
-To train and test on the demo dataset using the default features, run
+To train and test on the debug dataset (30 examples) using the default features, run
 
-    ./download-depenencies dataset_demo
-    ./web-entity-extractor @mode=main @data=demo @feat=test
+    ./download-depenencies dataset_debug
+    ./web-entity-extractor @mode=main @data=debug @feat=default
 
 For the OpenWeb dataset, make sure the system has enough RAM (~40GB recommended) and run
 
     ./download-depenencies dataset_openweb
-    ./web-entity-extractor @memsize=high @mode=main @data=dev @feat=test -numThreads 0 -fold 3
+    ./web-entity-extractor @memsize=high @mode=main @data=dev @feat=default -numThreads 0 -fold 3
 
 The flag `-numThreads 0` uses all CPUs available, while `-fold 3` runs the system on 3 random splits of the dataset.
 Note that the system may take a long time on the first run to cache all linguistic data.

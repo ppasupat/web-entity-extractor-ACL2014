@@ -1,7 +1,6 @@
 package edu.stanford.nlp.semparse.open;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -9,8 +8,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
+import edu.stanford.nlp.semparse.open.core.AllOptions;
 import edu.stanford.nlp.semparse.open.core.InteractiveDemo;
 import edu.stanford.nlp.semparse.open.core.OpenSemanticParser;
 import edu.stanford.nlp.semparse.open.core.ParallelizedTrainer;
@@ -18,36 +17,9 @@ import edu.stanford.nlp.semparse.open.core.eval.Evaluator;
 import edu.stanford.nlp.semparse.open.core.eval.EvaluatorStatistics;
 import edu.stanford.nlp.semparse.open.core.eval.IterativeTester;
 import edu.stanford.nlp.semparse.open.dataset.Dataset;
-import edu.stanford.nlp.semparse.open.dataset.ExpectedAnswer;
-import edu.stanford.nlp.semparse.open.dataset.ExpectedAnswerCriteriaMatch;
-import edu.stanford.nlp.semparse.open.dataset.ExpectedAnswerInjectiveMatch;
-import edu.stanford.nlp.semparse.open.dataset.entity.TargetEntityNearMatch;
-import edu.stanford.nlp.semparse.open.dataset.library.JSONDatasetReader;
 import edu.stanford.nlp.semparse.open.dataset.library.DatasetLibrary;
-import edu.stanford.nlp.semparse.open.ling.BrownClusterTable;
-import edu.stanford.nlp.semparse.open.ling.FrequencyTable;
-import edu.stanford.nlp.semparse.open.ling.LingData;
-import edu.stanford.nlp.semparse.open.ling.WordNetClusterTable;
-import edu.stanford.nlp.semparse.open.ling.WordVectorTable;
-import edu.stanford.nlp.semparse.open.model.AdvancedWordVectorParams;
-import edu.stanford.nlp.semparse.open.model.AdvancedWordVectorParamsLowRank;
-import edu.stanford.nlp.semparse.open.model.LearnerBaseline;
-import edu.stanford.nlp.semparse.open.model.LearnerMaxEnt;
-import edu.stanford.nlp.semparse.open.model.LearnerMaxEntWithBeamSearch;
-import edu.stanford.nlp.semparse.open.model.Params;
-import edu.stanford.nlp.semparse.open.model.candidate.CandidateGenerator;
-import edu.stanford.nlp.semparse.open.model.candidate.CandidateGroup;
-import edu.stanford.nlp.semparse.open.model.feature.FeatureType;
-import edu.stanford.nlp.semparse.open.model.feature.FeatureTypeHoleBased;
-import edu.stanford.nlp.semparse.open.model.feature.FeatureTypeLinguisticsBased;
-import edu.stanford.nlp.semparse.open.model.feature.FeatureTypeNaiveEntityBased;
-import edu.stanford.nlp.semparse.open.model.feature.FeatureTypeNodeBased;
-import edu.stanford.nlp.semparse.open.model.feature.FeatureTypeQueryBased;
-import edu.stanford.nlp.semparse.open.model.tree.KnowledgeTreeBuilder;
 import fig.basic.LogInfo;
 import fig.basic.Option;
-import fig.basic.OptionsParser;
-import fig.basic.OrderedStringMap;
 import fig.exec.Execution;
 
 /**
@@ -97,42 +69,8 @@ public class Main implements Runnable {
   }
   public static Options opts = new Options();
   
-  public static OptionsParser getOptionsParser() {
-    OptionsParser parser = new OptionsParser();
-    parser.registerAll(new Object[] {
-        "AbstractJSONDatasetReader", JSONDatasetReader.opts,
-        "AdvancedWordVectorParams", AdvancedWordVectorParams.opts,
-        "AdvancedWordVectorParamsLowRank", AdvancedWordVectorParamsLowRank.opts,
-        "BrownClusterTable", BrownClusterTable.opts,
-        "CandidateGenerator", CandidateGenerator.opts,
-        "CandidateGroup", CandidateGroup.opts,
-        "ExpectedAnswer", ExpectedAnswer.opts,
-        "ExpectedAnswerInjectiveMatch", ExpectedAnswerInjectiveMatch.opts,
-        "ExpectedAnswerCriteriaMatch", ExpectedAnswerCriteriaMatch.opts,
-        "FeatureType", FeatureType.opts,
-        "FeatureTypeHoleBased", FeatureTypeHoleBased.opts,
-        "FeatureTypeNaiveEntityBased", FeatureTypeNaiveEntityBased.opts,
-        "FeatureTypeLinguisticsBased", FeatureTypeLinguisticsBased.opts,
-        "FeatureTypeNodeBased", FeatureTypeNodeBased.opts,
-        "FeatureTypeQueryBased", FeatureTypeQueryBased.opts,
-        "FrequencyTable", FrequencyTable.opts,
-        "KnowledgeTreeBuilder", KnowledgeTreeBuilder.opts,
-        "LearnerBaseline", LearnerBaseline.opts,
-        "LearnerMaxEnt", LearnerMaxEnt.opts,
-        "LearnerMaxEntWithBeamSearch", LearnerMaxEntWithBeamSearch.opts,
-        "LingData", LingData.opts,
-        "main", Main.opts,
-        "OpenSemanticParser", OpenSemanticParser.opts,
-        "Params", Params.opts,
-        "TargetEntityNearMatch", TargetEntityNearMatch.opts,
-        "WordNetClusterTable", WordNetClusterTable.opts,
-        "WordVectorTable", WordVectorTable.opts,
-    });
-    return parser;
-  }
-  
   public static void main(String args[]) {
-    Execution.run(args, new Main(), getOptionsParser());
+    Execution.run(args, new Main(), AllOptions.getOptionsParser());
   }
     
   // ============================================================
@@ -148,30 +86,36 @@ public class Main implements Runnable {
       trainAndTestMode();
     }
   }
+  
+  public void loadAndTestMode() {
+    loadAndTestMode(DatasetLibrary.getDataset(opts.dataset));
+  }
 
-  private void loadAndTestMode() {
-    OpenSemanticParser parser = loadModel();
-    Dataset dataset = DatasetLibrary.getDataset(opts.dataset);
+  public void loadAndTestMode(Dataset dataset) {
+    OpenSemanticParser parser = AllOptions.loadModel(opts.loadModel);
     if (dataset == null) {
       // Interactive demo mode
       new InteractiveDemo(parser).run();
     } else {
       // Test on the specified data set
-      Dataset testDataset = new Dataset();
-      testDataset.addTestFromDataset(dataset);
-      test(parser, testDataset);
+      new OpenSemanticParser().preTrain(dataset);
+      testCombined(parser, dataset);
     }
     OpenSemanticParser.cleanUp();
   }
+  
+  public void trainAndTestMode() {
+    trainAndTestMode(DatasetLibrary.getDataset(opts.dataset));
+  }
 
-  private void trainAndTestMode() {
+  public void trainAndTestMode(Dataset dataset) {
     // Train + Test (possibly many folds)
-    Dataset dataset = DatasetLibrary.getDataset(opts.dataset);
     if (dataset == null)
       LogInfo.fail("Must specify either a dataset to train on or a model to load.");
     Execution.putOutput("numTrainExamples", dataset.trainExamples.size());
     Execution.putOutput("numTestExamples", dataset.testExamples.size());
     OpenSemanticParser.init();
+    new OpenSemanticParser().preTrain(dataset);
     List<IterativeTester> iterativeTesters = (opts.folds > 1) ? runParallel(dataset) : runSingle(dataset);
     OpenSemanticParser.cleanUp();
     summarize(iterativeTesters);
@@ -188,8 +132,6 @@ public class Main implements Runnable {
   }
 
   private List<IterativeTester> runParallel(Dataset dataset) {
-    // Pretrain the dataset
-    new OpenSemanticParser().preTrain(dataset);
     // Parallelize training
     int numThread = Math.min(Runtime.getRuntime().availableProcessors(), opts.folds);
     ExecutorService service = Executors.newFixedThreadPool(numThread);
@@ -228,13 +170,15 @@ public class Main implements Runnable {
 
   private OpenSemanticParser train(Dataset dataset) {
     OpenSemanticParser parser = new OpenSemanticParser();
-    parser.preTrain(dataset);
     parser.train(dataset);
     if (opts.saveModel != null)
-      saveModel(parser);
+      AllOptions.saveModel(opts.saveModel, parser);
     return parser;
   }
-
+  
+  /**
+   * Test on both training set and test set
+   */
   private OpenSemanticParser test(OpenSemanticParser parser, Dataset dataset) {
     Evaluator trainEvaluator = parser.test(dataset.trainExamples, "TRANING SET");
     Evaluator testEvaluator = parser.test(dataset.testExamples, "TEST SET");
@@ -246,6 +190,22 @@ public class Main implements Runnable {
     trainEvaluator.printScores();
     testEvaluator.printScores();
     trainEvaluator.putOutput("train");
+    testEvaluator.putOutput("test");
+    LogInfo.end_track();
+    return parser;
+  }
+  
+  /**
+   * Combine everything into the "test" dataset and test on it
+   */
+  private OpenSemanticParser testCombined(OpenSemanticParser parser, Dataset dataset) {
+    dataset = new Dataset().addTestFromDataset(dataset);
+    Evaluator testEvaluator = parser.test(dataset.testExamples, "TEST SET");
+    LogInfo.begin_track("### Error Analysis ###");
+    testEvaluator.printDetails();
+    LogInfo.end_track();
+    LogInfo.begin_track("### Summary ###");
+    testEvaluator.printScores();
     testEvaluator.putOutput("test");
     LogInfo.end_track();
     return parser;
@@ -267,76 +227,6 @@ public class Main implements Runnable {
       EvaluatorStatistics.logAverage(trainStats, "train");
       EvaluatorStatistics.logAverage(testStats, "test");
     }
-  }
-
-  // ============================================================
-  // Persistence with model
-  // ============================================================
-
-  private OpenSemanticParser loadModel() {
-    // Load options
-    LogInfo.log("Loading options from " + opts.loadModel);
-    getOptionsParser().parseOptionsFile(opts.loadModel);
-    // Load parameters
-    LogInfo.log("Loading parameters from " + opts.loadModel + ".params");
-    OpenSemanticParser.init();
-    OpenSemanticParser parser = new OpenSemanticParser();
-    parser.load(opts.loadModel + ".params");
-    return parser;
-  }
-
-  private void saveModel(OpenSemanticParser parser) {
-    try {
-      // Save options
-      LogInfo.log("Saving options to " + opts.saveModel);
-      OrderedStringMap allOptions = getOptionsParser().getOptionPairs();
-      OrderedStringMap importantOptions = new OrderedStringMap();
-      for (String key : allOptions.keys()) {
-        if (isImportantOption(key))
-          importantOptions.put(key, allOptions.get(key));
-      }
-      importantOptions.printHard(opts.saveModel);
-      // Save parameters
-      LogInfo.log("Saving parameters to " + opts.saveModel + ".params");
-      parser.save(opts.saveModel + ".params");
-    } catch (RuntimeException e) {
-      LogInfo.warning(e);
-      LogInfo.warnings("Cannot save to %s but will continue anyway.", opts.saveModel);
-    }
-  }
-
-  private static Set<String> importantClasses = Sets.newHashSet(
-      "AdvancedWordVectorParams",
-      "BrownClusterTable",
-      "CandidateGenerator",
-      "CandidateGroup",
-      "FeatureType",
-      "FeatureTypeHoleBased",
-      "FeatureTypeNaiveEntityBased",
-      "FeatureTypeLinguisticsBased",
-      "FeatureTypeNodeBased",
-      "FeatureTypeQueryBased",
-      "FrequencyTable",
-      "KnowledgeTreeBuilder",
-      "LearnerBaseline",
-      "LearnerMaxEntWithBeamSearch",
-      "TargetEntityNearMatch",
-      "WordNetClusterTable",
-      "WordVectorTable"
-      );
-  private static Set<String> importantOptions = Sets.newHashSet(
-      "AdvancedWordVectorParamsLowRank.vecRank",
-      "LingData.annotators",
-      "LingData.useAnnotators",
-      "LingData.caseSensitive",
-      "OpenSemanticParser.learner"
-      );
-
-  /**
-   * Return true if the option is important for prediction (not for learning parameters).
-   */
-  private boolean isImportantOption(String key) {
-    return importantClasses.contains(key.split("\\.")[0]) || importantOptions.contains(key);
   }
 
 }

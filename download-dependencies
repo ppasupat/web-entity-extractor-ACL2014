@@ -2,7 +2,7 @@
 
 $modules = [:core,
             :ling,
-            :dataset_demo,
+            :dataset_debug,
             :dataset_openweb,
             ]
 

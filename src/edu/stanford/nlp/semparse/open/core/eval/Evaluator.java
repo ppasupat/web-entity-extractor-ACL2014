@@ -95,6 +95,7 @@ public class Evaluator {
   public Evaluator putOutput(String prefix) {
     Execution.putOutput(prefix + ".numExamples", numExamples);
     Execution.putOutput(prefix + ".accuracy", 1.0 * numSuccess / numExamples);
+    Execution.putOutput(prefix + ".accuracyFound", 1.0 * numSuccess / numFound);
     Execution.putOutput(prefix + ".oracle", 1.0 * numFound / numExamples);
     Execution.putOutput(prefix + ".averageF1onTargetEntities", sumF1onExpectedEntities * 1.0 / numExamples);
     Execution.putOutput(prefix + ".averageF1onBestCandidate", sumF1onBest * 1.0 / numExamples);

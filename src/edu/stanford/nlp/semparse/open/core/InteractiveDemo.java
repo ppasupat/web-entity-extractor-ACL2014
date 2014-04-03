@@ -30,10 +30,15 @@ public class InteractiveDemo {
         if (url == null) {System.out.println(); break;}
         CandidateStatistics pred = url.isEmpty() ? parser.predict(phrase) : parser.predict(phrase, url);
         LogInfo.begin_track("PRED (top scoring candidate):");
-        LogInfo.logs("Rank 1 [Unique Rank 1]: (Total Feature Score = %s)", pred.score);
-        Candidate candidate = pred.candidate;
-        LogInfo.logs("Extraction Predicate: %s", candidate.pattern);
-        LogInfo.log(candidate.sampleEntities());
+        if (pred == null) {
+          LogInfo.log("Rank 1 [Unique Rank 1]: NO CANDIDATE FOUND!");
+        } else {
+          LogInfo.logs("Rank 1 [Unique Rank 1]: (Total Feature Score = %s)", pred.score);
+          Candidate candidate = pred.candidate;
+          LogInfo.logs("Extraction Predicate: %s", candidate.pattern);
+          LogInfo.log(candidate.sampleEntities());
+        }
+        LogInfo.end_track();
       }
     } catch (IOException e) {
       LogInfo.fail(e);

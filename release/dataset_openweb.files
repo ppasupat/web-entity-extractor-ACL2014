@@ -8,5 +8,5 @@
 
 datasets/openweb/train.json
 datasets/openweb/test.json
-datasets/openweb/train.cache
-datasets/openweb/test.cache
+scripts/frozen.cache/openweb-train/
+scripts/frozen.cache/openweb-test/

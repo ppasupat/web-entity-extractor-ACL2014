@@ -53,7 +53,7 @@ run!(
     'all' => l(o('useAllFeatures', true)),
     'structural' => l(o('useAllFeatures', false), o('include', 'self-or-ancestors', 'node-range', 'path-tail', 'hole')),
     'denotation' => l(o('useAllFeatures', false), o('include', 'entity', 'ling')),
-    'test' => l(o('useAllFeatures', false), o('include', 'self-or-ancestors', 'node-range', 'path-tail', 'hole', 'entity', 'ling')),
+    'default' => l(o('useAllFeatures', false), o('include', 'self-or-ancestors', 'node-range', 'path-tail', 'hole', 'entity', 'ling')),
   }),
 
   sel(1,
@@ -78,14 +78,19 @@ run!(
   nil),
 
   sel(1,
+    l(), # Don't use query types
+    l(o('queryTypeFilename', 'lib/ling-data/queryType.tsv')), # default
+  nil),
+
+  sel(1,
     l(),
     l(o('lateNorm', 3), o('targetNorm', 3)),
   nil),
 
   # Dataset
   sel(:data, {
-    'demo' => l(
-      o('dataset', 'demo.30-examples'),
+    'debug' => l(
+      o('dataset', 'openweb.debug'),
     nil),
 
     'dev' => l(
@@ -96,6 +101,7 @@ run!(
       o('dataset', 'openweb.train@test'),
     nil),
 
+    'custom' => l(),
     'interactive' => l(),
   }),
 
