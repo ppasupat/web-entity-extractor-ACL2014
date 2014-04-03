@@ -3,7 +3,7 @@
 # These files are hosted on the Stanford NLP web endpoint and are
 # intended to be obtained via the command
 #
-#     ./download-dependencies dataset-debug
+#     ./download-dependencies dataset_debug
 #
 
 datasets/openweb/debug.json

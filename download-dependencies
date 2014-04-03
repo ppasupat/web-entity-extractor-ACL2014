@@ -26,7 +26,8 @@ end
 BASE_URL = 'http://nlp.stanford.edu/software/web-entity-extractor-ACL2014/'
 def download(release, path, baseUrl=BASE_URL)
   url = baseUrl + '/release-' + release.to_s
-  isDirectory = (path.end_with?('.cache'))  # Superficial test for directory
+  isDirectory = path.end_with?('/')
+  path = path.sub(/\/*$/, '')
   if release != :code and !path.end_with?('.gz', '.tgz', '.jar')
     path += '.tar' if isDirectory
     path += '.bz2'
@@ -45,7 +46,7 @@ end
 def downloadFromFileList(release)
   files = []
   File.foreach(File.join('release', "#{release.to_s}.files")) { |line|
-    file = line.sub(/#.*$/, '').sub(/^\s*/, '').sub(/\/*\s*$/, '')
+    file = line.sub(/#.*$/, '').sub(/^\s*/, '').sub(/\s*$/, '')
     next if file.length == 0
     files << file
   }
