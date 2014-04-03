@@ -45,8 +45,8 @@ end
 def downloadFromFileList(release)
   files = []
   File.foreach(File.join('release', "#{release.to_s}.files")) { |line|
-    file = line.sub(/#.*$/, '').sub(/^\s*/, '').sub(/\s*$/, '')
-    next if file.size == 0
+    file = line.sub(/#.*$/, '').sub(/^\s*/, '').sub(/\/*\s*$/, '')
+    next if file.length == 0
     files << file
   }
   files.each { |path|
