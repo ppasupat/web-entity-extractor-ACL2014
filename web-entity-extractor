@@ -31,9 +31,9 @@ run!(
     'main' => l(
       'edu.stanford.nlp.semparse.open.Main',
     nil),
-    'baseline' => l(
-      'edu.stanford.nlp.semparse.open.experiment.Experiments',
-      o('experiment', 'baseline'), let(:feat, 'none'),
+    'load' => l(
+      'edu.stanford.nlp.semparse.open.Main',
+      let(:feat, 'none'),
     nil),
     'interactive' => l(
       'edu.stanford.nlp.semparse.open.Main',
@@ -103,6 +103,10 @@ run!(
 
     'dev' => l(
       o('dataset', 'openweb.train'),
+    nil),
+
+    'test' => l(
+      o('dataset', 'openweb.test'),
     nil),
 
     'real' => l(

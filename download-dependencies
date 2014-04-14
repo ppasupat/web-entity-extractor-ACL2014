@@ -4,6 +4,7 @@ $modules = [:core,
             :ling,
             :dataset_debug,
             :dataset_openweb,
+            :model,
             ]
 
 def usage

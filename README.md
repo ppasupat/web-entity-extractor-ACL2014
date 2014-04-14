@@ -16,6 +16,7 @@ Other required libraries and resources can be downloaded using the following com
 * `./download-dependencies ling`: download linguistic resources
 * `./download-dependencies dataset_debug`: download a small dataset for testing the installation
 * `./download-dependencies dataset_openweb`: download the OpenWeb dataset, which contains diverse queries and web pages
+* `./download-dependencies model`: download a model trained on the training data of the OpenWeb dataset
 
 ## Compiling
 
@@ -37,6 +38,15 @@ For the OpenWeb dataset, make sure the system has enough RAM (~40GB recommended)
     ./download-dependencies dataset_openweb
     ./web-entity-extractor @memsize=high @mode=main @data=dev @feat=default -numThreads 0 -fold 3
 
+Alternatively, run the pre-trained model on the dataset using
+
+    ./download-dependencies model
+    ./download-dependencies dataset_openweb
+    # Test on the training data
+    ./web-entity-extractor @memsize=high @mode=load -loadModel models/openweb-devset @data=dev -numThreads 0
+    # Test on the test data
+    ./web-entity-extractor @memsize=high @mode=load -loadModel models/openweb-devset @data=test -numThreads 0
+    
 The flag `-numThreads 0` uses all CPUs available, while `-fold 3` runs the system on 3 random splits of the dataset.
 Note that the system may take a long time on the first run to cache all linguistic data.
 
@@ -44,9 +54,9 @@ Note that the system may take a long time on the first run to cache all linguist
 
 The interactive mode allows the user to apply the trained model on any query and web page.
 
-To use the interactive mode, first train and save a model by adding `-saveModel [FILENAME]` to one of the commands above, and then run
+To use the interactive mode, first train and save a model by adding `-saveModel [MODELNAME]` to one of the commands above, and then run
 
-    ./web-entity-extractor @mode=interactive -loadModel [FILENAME]
+    ./web-entity-extractor @mode=interactive -loadModel [MODELNAME]
 
 ## License
 
