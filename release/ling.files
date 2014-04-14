@@ -7,8 +7,8 @@
 #
 
 # wordreprs (Turian et al.)
-lib/wordreprs/brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt
-lib/wordreprs/embeddings-scaled.EMBEDDING_SIZE=50.txt
+#lib/wordreprs/brown-rcv1.clean.tokenized-CoNLL03.txt-c1000-freq1.txt
+#lib/wordreprs/embeddings-scaled.EMBEDDING_SIZE=50.txt
 
 # Others
 lib/ling-data/queryType.tsv

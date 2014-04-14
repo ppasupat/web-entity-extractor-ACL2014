@@ -14,7 +14,7 @@ import edu.stanford.nlp.semparse.open.model.tree.KNode;
  * 
  * Use a normal List for an editable path.
  */
-public class PathEntry {
+public class PathEntry implements Comparable<PathEntry> {
   final public String tag;
   final public int index;   // 0-based; -1 = no index
 
@@ -62,5 +62,10 @@ public class PathEntry {
 
   @Override public int hashCode() {
     return tag.hashCode() + index;
+  }
+
+  @Override
+  public int compareTo(PathEntry o) {
+    return toString().compareTo(o.toString());
   }
 }

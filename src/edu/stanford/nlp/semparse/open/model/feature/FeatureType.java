@@ -63,6 +63,9 @@ public abstract class FeatureType {
     
     @Option(gloss = "Use all features instead of aggregation")
     public boolean noAggregation = false;
+    
+    @Option(gloss = "Bin the mean and deviation features")
+    public boolean useDiscreteMeanAndDeviation = true;
   }
   public static Options opts = new Options();
   
@@ -91,7 +94,7 @@ public abstract class FeatureType {
       // (Structural) Hole
       "hole",
       // (Denotation) Header and Proximity
-      "header", "proximity"
+      "header"
       );
   
   public static void checkFeatureTypeOptionsSanity() {
@@ -131,11 +134,11 @@ public abstract class FeatureType {
   // ============================================================
 
   /**
-   * Add features ">= 2", ">= 4", ">= 8", etc.
+   * Add features ">= 1", ">= 2", ">= 4", ">= 8", etc.
    */
   protected void addQuantizedFeatures(FeatureVector v, String domain, String name, double value) {
     value = Math.min(value, Integer.MAX_VALUE);
-    for (int i = 2; i <= value; i *= 2)
+    for (int i = 1; i <= value; i *= 2)
       v.add(domain, name + " >= " + i);
   }
 
@@ -411,8 +414,13 @@ public abstract class FeatureType {
     }
     mean = mean / multiset.size();
     variance = variance / multiset.size() - mean * mean;
-    v.add(domain, name + "-mean", mean);
-    v.add(domain, name + "-deviation", Math.sqrt(variance));
+    if (opts.useDiscreteMeanAndDeviation) {
+      addQuantizedFeatures(v, domain, name + "-mean", mean);
+      addQuantizedFeatures(v, domain, name + "-deviation", Math.sqrt(variance));
+    } else {
+      v.add(domain, name + "-mean", mean);
+      v.add(domain, name + "-deviation", Math.sqrt(variance));
+    }
   }
   
   // ============================================================

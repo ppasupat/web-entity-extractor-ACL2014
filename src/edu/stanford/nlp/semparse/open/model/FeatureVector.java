@@ -96,6 +96,22 @@ public class FeatureVector {
     }
   }
   
+  public void addConjoin(FeatureVector that, String prefix, double scale) { addConjoin(that, prefix, AllFeatureMatcher.matcher, scale); }
+  public void addConjoin(FeatureVector that, String prefix, FeatureMatcher matcher, double scale) {
+    if (that.indicatorFeatures != null) {
+      if (generalFeatures == null) generalFeatures = new StringDoubleArrayList();
+      for (String f : that.indicatorFeatures)
+        if (matcher.matches(f))
+          generalFeatures.add((prefix + " " + f).intern(), scale);
+    }
+    if (that.generalFeatures != null) {
+      if (generalFeatures == null) generalFeatures = new StringDoubleArrayList();
+      for (StringDoublePair pair : that.generalFeatures)
+        if (matcher.matches(pair.getFirst()))
+          generalFeatures.add((prefix + " " + pair.getFirst()).intern(), pair.getSecond() * scale);
+    }
+  }
+  
   // ============================================================
   // Dot product
   // ============================================================

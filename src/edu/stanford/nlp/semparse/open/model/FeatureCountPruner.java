@@ -14,6 +14,11 @@ import fig.basic.LogInfo;
 public class FeatureCountPruner implements FeatureMatcher {
 
   public Multiset<String> counts = HashMultiset.create();
+  public boolean beVeryQuiet;
+  
+  public FeatureCountPruner(boolean beVeryQuiet) {
+    this.beVeryQuiet = beVeryQuiet;
+  }
   
   /**
    * Add features from the example to the count.
@@ -21,7 +26,7 @@ public class FeatureCountPruner implements FeatureMatcher {
    * The same feature within the same example counts as 1 feature.
    */
   public void add(Example example) {
-    LogInfo.begin_track("Collecting features from %s ...", example);
+    if (!beVeryQuiet) LogInfo.begin_track("Collecting features from %s ...", example);
     Set<String> uniqued = Sets.newHashSet();
     for (Candidate candidate : example.candidates) {
       for (String name : candidate.getCombinedFeatures().keySet()) {
@@ -29,21 +34,21 @@ public class FeatureCountPruner implements FeatureMatcher {
       }
     }
     for (String name : uniqued) counts.add(name);
-    LogInfo.end_track();
+    if (!beVeryQuiet) LogInfo.end_track();
   }
   
   /**
    * Prune the features with count < minimumCount
    */
   public void applyThreshold(int minimumCount) {
-    LogInfo.begin_track("Pruning features with count < %d ...", minimumCount);
-    LogInfo.logs("Original #Features: %d", counts.elementSet().size());
+    if (!beVeryQuiet) LogInfo.begin_track("Pruning features with count < %d ...", minimumCount);
+    if (!beVeryQuiet) LogInfo.logs("Original #Features: %d", counts.elementSet().size());
     Iterator<String> iter = counts.iterator();
     while (iter.hasNext()) {
       if (counts.count(iter.next()) < minimumCount) iter.remove();
     }
-    LogInfo.logs("Pruned #Features: %d", counts.elementSet().size());
-    LogInfo.end_track();
+    if (!beVeryQuiet) LogInfo.logs("Pruned #Features: %d", counts.elementSet().size());
+    if (!beVeryQuiet) LogInfo.end_track();
   }
 
   @Override

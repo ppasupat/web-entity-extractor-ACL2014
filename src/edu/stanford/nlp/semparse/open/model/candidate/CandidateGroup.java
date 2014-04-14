@@ -65,6 +65,10 @@ public class CandidateGroup {
     return new Candidate(this, pattern);
   }
   
+  public double getReward() {
+    return ex.expectedAnswer.reward(this);
+  }
+  
   // ============================================================
   // Debug Print
   // ============================================================

@@ -51,11 +51,19 @@ public class KNodeUtils {
     }
     System.err.printf("%s<%s>\n", new String(new char[indent]).replace('\0', ' '), node.value);
     for (KNode child : node.getChildren()) {
-      if (child.type == KNode.Type.TAG) {
-        printTree(child, indent + 2);
-      }
+      printTree(child, indent + 2);
     }
     System.err.printf("%s</%s>\n", new String(new char[indent]).replace('\0', ' '), node.value);
   }
 
+  /**
+   * Copy a KNode and its subtree to a new parent.
+   */
+  public static KNode copyTree(KNode node, KNode newParent) {
+    KNode newNode = newParent.createChild(node);
+    for (KNode x : node.getChildren()) copyTree(x, newNode);
+    for (KNode x : node.getAttributes()) copyTree(x, newNode);
+    return newNode;
+  }
+  
 }

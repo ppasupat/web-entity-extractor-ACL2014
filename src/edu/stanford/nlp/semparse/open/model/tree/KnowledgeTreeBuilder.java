@@ -168,7 +168,7 @@ public class KnowledgeTreeBuilder {
       ExampleCached ex = new ExampleCached("Slovenian film", "frozen.cache/wiki/",
           "62f4c2c17afec7e54d6362f280a1e6ab65444e73", null, null);
       builder.buildKnowledgeTree(ex);
-      KNodeUtils.printTree(ex.tree.getChildren().get(0).getChildren().get(0));
+      KNodeUtils.printTree(ex.tree);
     }
     /*{
       ExampleCached ex = new ExampleCached("oxymorons", "frozen.cache/02/",

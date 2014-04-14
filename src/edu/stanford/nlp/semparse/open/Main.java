@@ -2,10 +2,7 @@ package edu.stanford.nlp.semparse.open;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Lists;
 
@@ -18,6 +15,7 @@ import edu.stanford.nlp.semparse.open.core.eval.EvaluatorStatistics;
 import edu.stanford.nlp.semparse.open.core.eval.IterativeTester;
 import edu.stanford.nlp.semparse.open.dataset.Dataset;
 import edu.stanford.nlp.semparse.open.dataset.library.DatasetLibrary;
+import edu.stanford.nlp.semparse.open.util.Parallelizer;
 import fig.basic.LogInfo;
 import fig.basic.Option;
 import fig.exec.Execution;
@@ -116,6 +114,7 @@ public class Main implements Runnable {
     Execution.putOutput("numTestExamples", dataset.testExamples.size());
     OpenSemanticParser.init();
     new OpenSemanticParser().preTrain(dataset);
+    dataset.cacheRewards();
     List<IterativeTester> iterativeTesters = (opts.folds > 1) ? runParallel(dataset) : runSingle(dataset);
     OpenSemanticParser.cleanUp();
     summarize(iterativeTesters);
@@ -132,33 +131,26 @@ public class Main implements Runnable {
   }
 
   private List<IterativeTester> runParallel(Dataset dataset) {
-    // Parallelize training
-    int numThread = Math.min(Runtime.getRuntime().availableProcessors(), opts.folds);
-    ExecutorService service = Executors.newFixedThreadPool(numThread);
+    // Shuffle dataset
     List<ParallelizedTrainer> tasks = Lists.newArrayList();
     Dataset shuffled = dataset;
     for (int i = 0; i < opts.folds; i++) {
       tasks.add(new ParallelizedTrainer(shuffled, i != 0));
       shuffled = shuffled.getNewShuffledDataset();
     }
-    List<Future<OpenSemanticParser>> parsers;
+    // Turn off logging temporarily
+    int oldLogVerbosity = OpenSemanticParser.opts.logVerbosity;
+    OpenSemanticParser.opts.logVerbosity = 0;
+    // Train in parallel
+    List<Future<OpenSemanticParser>> parsers = Parallelizer.runAndReturnStuff(tasks);
+    OpenSemanticParser.opts.logVerbosity = oldLogVerbosity;
+    // Accumulate OpenSemanticParser and test on the first random split
     List<IterativeTester> iterativeTesters = Lists.newArrayList();
     try {
-      // Turn off logging temporarily
-      int oldLogVerbosity = OpenSemanticParser.opts.logVerbosity;
-      OpenSemanticParser.opts.logVerbosity = 0;
-      // Invoke all trainers
-      parsers = service.invokeAll(tasks);
       for (int i = 0; i < opts.folds; i++)
         iterativeTesters.add(parsers.get(i).get().getIterativeTester());
-      service.shutdown();
-      service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-      // Print results from the 1st run
-      OpenSemanticParser.opts.logVerbosity = oldLogVerbosity;
       test(parsers.get(0).get(), dataset);
-    } catch (InterruptedException e) {
-      LogInfo.fail(e);
-    } catch (ExecutionException e) {
+    } catch (ExecutionException | InterruptedException e) {
       LogInfo.fail(e);
     }
     return iterativeTesters;

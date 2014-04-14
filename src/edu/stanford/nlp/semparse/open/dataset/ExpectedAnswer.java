@@ -10,6 +10,7 @@ import edu.stanford.nlp.semparse.open.core.eval.CandidateStatistics;
 import edu.stanford.nlp.semparse.open.dataset.entity.TargetEntity;
 import edu.stanford.nlp.semparse.open.dataset.entity.TargetEntityString;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
+import edu.stanford.nlp.semparse.open.model.candidate.CandidateGroup;
 import edu.stanford.nlp.semparse.open.util.StringSampler;
 import fig.basic.LogInfo;
 import fig.basic.Option;
@@ -75,6 +76,17 @@ public abstract class ExpectedAnswer {
    * - logRewardVerbosity > 1 : always log
    */
   public boolean frozenReward = false;
+  
+  /**
+   * Compute the reward (in the range 0 - 1)
+   */
+  public double reward(CandidateGroup group) {
+    double reward = reward(group.predictedEntities);
+    if (reward > 0 && (opts.logRewardVerbosity >= 2 || (opts.logRewardVerbosity >= 1 && !frozenReward))) {
+      LogInfo.logs("reward = %s <<< %s", reward, group.sampleEntities());
+    }
+    return reward;
+  }
   
   /**
    * Compute the reward (in the range 0 - 1)

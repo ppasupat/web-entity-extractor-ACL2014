@@ -1,9 +1,6 @@
 package edu.stanford.nlp.semparse.open.core;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import com.google.common.collect.Lists;
 
@@ -23,8 +20,10 @@ import edu.stanford.nlp.semparse.open.model.LearnerMaxEnt;
 import edu.stanford.nlp.semparse.open.model.LearnerMaxEntWithBeamSearch;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
 import edu.stanford.nlp.semparse.open.model.candidate.CandidateGenerator;
+import edu.stanford.nlp.semparse.open.model.feature.FeaturePostProcessor;
 import edu.stanford.nlp.semparse.open.model.feature.FeatureType;
 import edu.stanford.nlp.semparse.open.model.tree.KnowledgeTreeBuilder;
+import edu.stanford.nlp.semparse.open.util.Parallelizer;
 import fig.basic.LogInfo;
 import fig.basic.Option;
 import fig.basic.Pair;
@@ -32,8 +31,6 @@ import fig.exec.Execution;
 
 public class OpenSemanticParser {
   public static class Options {
-    @Option(gloss = "Number of threads for candidate and feature extraction")
-    public int numThreads = 1;
     @Option(gloss = "Whether to test on training and test data every training iteration")
     public boolean testEveryIteration = true;
     @Option(gloss = "Log parameters after training")
@@ -69,6 +66,7 @@ public class OpenSemanticParser {
     LingData.loadCache();
     // Check the feature options
     FeatureType.checkFeatureTypeOptionsSanity();
+    FeaturePostProcessor.checkFeaturePostProcessorOptionsSanity();
     initialized = true;
   }
   
@@ -80,16 +78,16 @@ public class OpenSemanticParser {
   private Learner getLearner() {
     switch (opts.learner) {
       case "maxent":
-        LogInfo.log("Using MaxEnt learner ...");
+        //LogInfo.log("Using MaxEnt learner ...");
         return new LearnerMaxEnt();
       case "base":
       case "baseline":
-        LogInfo.log("Using baseline learner ...");
+        //LogInfo.log("Using baseline learner ...");
         return new LearnerBaseline();
       case "beam":
       case "beamsearch":
-        LogInfo.logs("Using MaxEnt learner with beam search (beam size = %d) ...",
-            LearnerMaxEntWithBeamSearch.opts.beamSize);
+        //LogInfo.logs("Using MaxEnt learner with beam search (beam size = %d) ...",
+        //    LearnerMaxEntWithBeamSearch.opts.beamSize);
         return new LearnerMaxEntWithBeamSearch();
     }
     LogInfo.fails("Unknown learner: %s", opts.learner);
@@ -121,7 +119,7 @@ public class OpenSemanticParser {
       toExtract.get(i).displayId = i + "/" + toExtract.size();
     if (toExtract.isEmpty()) return;
     
-    if (opts.numThreads == 1) {
+    if (Parallelizer.opts.numThreads == 1) {
       for (Example ex : toExtract) extractData(ex);
     } else {
       try {
@@ -143,17 +141,15 @@ public class OpenSemanticParser {
   }
   
   private void extractParallel(List<Example> examples) throws InterruptedException {
-    int numThread = opts.numThreads > 0 ? opts.numThreads : Runtime.getRuntime().availableProcessors();
-    ExecutorService service = Executors.newFixedThreadPool(numThread);
+    List<Runnable> tasks = Lists.newArrayList();
     for (final Example ex : examples) {
-      service.execute(new Runnable() {
+      tasks.add(new Runnable() {
         @Override public void run() {
           extractData(ex);
         }
       });
     }
-    service.shutdown();
-    service.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+    Parallelizer.run(tasks);
   }
 
   // ============================================================
@@ -171,10 +167,8 @@ public class OpenSemanticParser {
       learner.setIterativeTester(iterativeTester);
       if (beVeryQuiet) iterativeTester.beVeryQuiet = true;
     }
-    if (!beVeryQuiet) LogInfo.begin_track("Learn!");
     learner.learn(dataset, null);
     if (opts.logParams && !beVeryQuiet) learner.logParam();
-    if (!beVeryQuiet) LogInfo.end_track();
   }
   
   public void train(Dataset dataset) {
@@ -226,7 +220,8 @@ public class OpenSemanticParser {
       return evaluator;
     }
     
-    LogInfo.begin_track("Testing on %s", testSuiteName);
+    if (opts.logVerbosity > 0)
+      LogInfo.begin_track("Testing on %s", testSuiteName);
     
     // Process examples in the dataset
     extractData(examples);
@@ -274,7 +269,8 @@ public class OpenSemanticParser {
       }
     }
     
-    LogInfo.end_track();
+    if (opts.logVerbosity > 0)
+      LogInfo.end_track();
     return evaluator;
   }
 

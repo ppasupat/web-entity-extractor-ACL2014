@@ -18,8 +18,12 @@ import fig.basic.Option;
  */
 public class FeatureTypeLinguisticsBased extends FeatureType {
   public static class Options {
-    @Option public boolean lingWordPOS = false; 
     @Option public boolean lingLemmatizedTokens = false;
+    @Option public boolean lingWordPOS = false; 
+    @Option public boolean lingAltWordPOS = true;
+    @Option public boolean lingBinWordPOS = true;
+    @Option public boolean lingEntityPOS = false;
+    @Option public boolean lingCollapsedPOS = true;
   }
   public static Options opts = new Options();
 
@@ -62,8 +66,21 @@ public class FeatureTypeLinguisticsBased extends FeatureType {
       }
       if (opts.lingWordPOS)
         addVotingFeatures(group.features, "ling", "word-pos", countWordPOS);
-      addVotingFeatures(group.features, "ling", "entity-pos", countEntityPOS);
-      addVotingFeatures(group.features, "ling", "entity-collapsed-pos", countEntityCollapsedPOS);
+      if (opts.lingAltWordPOS) {
+        addEntropyFeatures(group.features, "ling", "word-pos", countWordPOS);
+        for (String pos : countWordPOS.elementSet()) {
+          if (opts.lingBinWordPOS) {
+            addPercentFeatures(group.features, "ling", "word-pos = " + pos,
+                countWordPOS.count(pos) * 1.0 / countWordPOS.size());
+          } else {
+            group.features.add("ling", "word-pos = " + pos);
+          }
+        }
+      }
+      if (opts.lingEntityPOS)
+        addVotingFeatures(group.features, "ling", "entity-pos", countEntityPOS);
+      if (opts.lingCollapsedPOS)
+        addVotingFeatures(group.features, "ling", "entity-collapsed-pos", countEntityCollapsedPOS);
       addEntropyFeatures(group.features, "ling", "first-token", countFirstToken);
       addEntropyFeatures(group.features, "ling", "last-token", countLastToken);
     }

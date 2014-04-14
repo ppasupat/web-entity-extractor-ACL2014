@@ -29,13 +29,15 @@ import edu.stanford.nlp.semparse.open.model.LearnerMaxEntWithBeamSearch;
 import edu.stanford.nlp.semparse.open.model.Params;
 import edu.stanford.nlp.semparse.open.model.candidate.CandidateGenerator;
 import edu.stanford.nlp.semparse.open.model.candidate.CandidateGroup;
+import edu.stanford.nlp.semparse.open.model.feature.FeaturePostProcessorConjoin;
 import edu.stanford.nlp.semparse.open.model.feature.FeatureType;
 import edu.stanford.nlp.semparse.open.model.feature.FeatureTypeHoleBased;
 import edu.stanford.nlp.semparse.open.model.feature.FeatureTypeLinguisticsBased;
 import edu.stanford.nlp.semparse.open.model.feature.FeatureTypeNaiveEntityBased;
 import edu.stanford.nlp.semparse.open.model.feature.FeatureTypeNodeBased;
-import edu.stanford.nlp.semparse.open.model.feature.FeatureTypeQueryBased;
+import edu.stanford.nlp.semparse.open.model.feature.FeatureTypePathBased;
 import edu.stanford.nlp.semparse.open.model.tree.KnowledgeTreeBuilder;
+import edu.stanford.nlp.semparse.open.util.Parallelizer;
 import fig.basic.LogInfo;
 import fig.basic.OptionsParser;
 import fig.basic.OrderedStringMap;
@@ -51,34 +53,40 @@ public class AllOptions {
   public static OptionsParser getOptionsParser() {
     OptionsParser parser = new OptionsParser();
     parser.registerAll(new Object[] {
+        "main", Main.opts,
+        "OpenSemanticParser", OpenSemanticParser.opts,
+        "Parallelizer", Parallelizer.opts,
+        // Dataset
         "AbstractJSONDatasetReader", JSONDatasetReader.opts,
-        "AdvancedWordVectorParams", AdvancedWordVectorParams.opts,
-        "AdvancedWordVectorParamsLowRank", AdvancedWordVectorParamsLowRank.opts,
-        "BrownClusterTable", BrownClusterTable.opts,
         "CandidateGenerator", CandidateGenerator.opts,
         "CandidateGroup", CandidateGroup.opts,
         "ExpectedAnswer", ExpectedAnswer.opts,
         "ExpectedAnswerInjectiveMatch", ExpectedAnswerInjectiveMatch.opts,
         "ExpectedAnswerCriteriaMatch", ExpectedAnswerCriteriaMatch.opts,
+        "KnowledgeTreeBuilder", KnowledgeTreeBuilder.opts,
+        "TargetEntityNearMatch", TargetEntityNearMatch.opts,
+        // Leaner
+        "AdvancedWordVectorParams", AdvancedWordVectorParams.opts,
+        "AdvancedWordVectorParamsLowRank", AdvancedWordVectorParamsLowRank.opts,
+        "LearnerBaseline", LearnerBaseline.opts,
+        "LearnerMaxEnt", LearnerMaxEnt.opts,
+        "LearnerMaxEntWithBeamSearch", LearnerMaxEntWithBeamSearch.opts,
+        "Params", Params.opts,
+        // Linguistic resources
+        "BrownClusterTable", BrownClusterTable.opts,
+        "FrequencyTable", FrequencyTable.opts,
+        "LingData", LingData.opts,
+        "QueryTypeTable", QueryTypeTable.opts,
+        "WordNetClusterTable", WordNetClusterTable.opts,
+        "WordVectorTable", WordVectorTable.opts,
+        // Features
         "FeatureType", FeatureType.opts,
         "FeatureTypeHoleBased", FeatureTypeHoleBased.opts,
         "FeatureTypeNaiveEntityBased", FeatureTypeNaiveEntityBased.opts,
         "FeatureTypeLinguisticsBased", FeatureTypeLinguisticsBased.opts,
         "FeatureTypeNodeBased", FeatureTypeNodeBased.opts,
-        "FeatureTypeQueryBased", FeatureTypeQueryBased.opts,
-        "FrequencyTable", FrequencyTable.opts,
-        "KnowledgeTreeBuilder", KnowledgeTreeBuilder.opts,
-        "LearnerBaseline", LearnerBaseline.opts,
-        "LearnerMaxEnt", LearnerMaxEnt.opts,
-        "LearnerMaxEntWithBeamSearch", LearnerMaxEntWithBeamSearch.opts,
-        "LingData", LingData.opts,
-        "main", Main.opts,
-        "OpenSemanticParser", OpenSemanticParser.opts,
-        "Params", Params.opts,
-        "QueryTypeTable", QueryTypeTable.opts,
-        "TargetEntityNearMatch", TargetEntityNearMatch.opts,
-        "WordNetClusterTable", WordNetClusterTable.opts,
-        "WordVectorTable", WordVectorTable.opts,
+        "FeatureTypePathBased", FeatureTypePathBased.opts,
+        "FeaturePostProcessorConjoin", FeaturePostProcessorConjoin.opts
     });
     return parser;
   }
@@ -160,32 +168,38 @@ public class AllOptions {
   }
   
   private static Set<String> importantClasses = Sets.newHashSet(
-       "AdvancedWordVectorParams",
-       "BrownClusterTable",
-       "CandidateGenerator",
-       "CandidateGroup",
-       "FeatureType",
-       "FeatureTypeHoleBased",
-       "FeatureTypeNaiveEntityBased",
-       "FeatureTypeLinguisticsBased",
-       "FeatureTypeNodeBased",
-       "FeatureTypeQueryBased",
-       "FrequencyTable",
-       "KnowledgeTreeBuilder",
-       "LearnerBaseline",
-       "LearnerMaxEntWithBeamSearch",
-       "QueryTypeTable",
-       "TargetEntityNearMatch",
-       "WordNetClusterTable",
-       "WordVectorTable"
-       );
+      // Dataset
+      "CandidateGenerator",
+      "CandidateGroup",
+      "KnowledgeTreeBuilder",
+      "TargetEntityNearMatch",
+      // Leaner
+      "AdvancedWordVectorParams",
+      "AdvancedWordVectorParamsLowRank",
+      "LearnerBaseline",
+      "LearnerMaxEnt",
+      "LearnerMaxEntWithBeamSearch",
+      // Linguistic resources
+      "BrownClusterTable",
+      "FrequencyTable",
+      "QueryTypeTable",
+      "WordNetClusterTable",
+      "WordVectorTable",
+      // Features
+      "FeatureType",
+      "FeatureTypeHoleBased",
+      "FeatureTypeNaiveEntityBased",
+      "FeatureTypeLinguisticsBased",
+      "FeatureTypeNodeBased",
+      "FeatureTypePathBased",
+      "FeaturePostProcessorConjoin"
+      );
   private static Set<String> importantOptions = Sets.newHashSet(
-       "AdvancedWordVectorParamsLowRank.vecRank",
-       "LingData.annotators",
-       "LingData.useAnnotators",
-       "LingData.caseSensitive",
-       "OpenSemanticParser.learner"
-       );
+      "LingData.annotators",
+      "LingData.useAnnotators",
+      "LingData.caseSensitive",
+      "OpenSemanticParser.learner"
+      );
 
   /**
    * Return true if the option is important for prediction (not for learning parameters).

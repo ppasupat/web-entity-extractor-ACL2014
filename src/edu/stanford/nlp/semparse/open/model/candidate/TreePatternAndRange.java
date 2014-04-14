@@ -64,4 +64,21 @@ public class TreePatternAndRange extends TreePattern {
     return candidates;
   }
   
+  /**
+   * Generate cut-range groups from the given group without actually adding any candidate.
+   * Only suitable for experiments only.
+   */
+  public static List<CandidateGroup> generateDummyCutRangeCandidateGroups(CandidateGroup group) {
+    List<CandidateGroup> candidateGroups = Lists.newArrayList();
+    // Remove a few stuff from both sides
+    int n = group.numEntities();
+    for (int i = 0; i < Math.min(5, n - CandidateGenerator.opts.minNumCandidateEntity); i++) {
+      candidateGroups.add(new CandidateGroup(group.ex, group.selectedNodes.subList(1, n)));
+    }
+    for (int i = 1; i < Math.min(10, n - CandidateGenerator.opts.minNumCandidateEntity); i++) {
+      candidateGroups.add(new CandidateGroup(group.ex, group.selectedNodes.subList(0, n-i)));
+    }
+    return candidateGroups;
+  }
+  
 }

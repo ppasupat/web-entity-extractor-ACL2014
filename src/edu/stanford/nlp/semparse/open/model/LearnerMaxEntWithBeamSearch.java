@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 
 import edu.stanford.nlp.semparse.open.dataset.Example;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
-import edu.stanford.nlp.semparse.open.model.candidate.TreePatternAndRange;
 import fig.basic.LogInfo;
 import fig.basic.Option;
 import fig.basic.Pair;
@@ -42,8 +41,11 @@ public class LearnerMaxEntWithBeamSearch extends LearnerMaxEnt {
   protected List<Candidate> getDerivedCandidates(Candidate original) {
     switch (opts.beamCandidateType) {
     case "cutrange":
-      return TreePatternAndRange.generateCutRangeCandidates(original);
+      LogInfo.fails("... not implemented yet ...");
+      //return TreePatternAndRange.generateCutRangeCandidates(original);
+      return null;
     case "endcut":
+      LogInfo.fails("... not implemented yet ...");
       return null;
     default:
       LogInfo.fails("Unrecognized beam candidate type: %s", opts.beamCandidateType);

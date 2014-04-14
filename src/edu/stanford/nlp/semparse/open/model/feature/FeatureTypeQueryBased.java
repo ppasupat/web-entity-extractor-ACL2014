@@ -20,6 +20,7 @@ import fig.basic.Option;
 import fig.basic.T2DoubleMap;
 import fig.basic.TDoubleMap;
 
+@Deprecated
 public class FeatureTypeQueryBased extends FeatureType {
   public static class Options {
     @Option(gloss = "Use Freebase mapping")

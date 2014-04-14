@@ -12,6 +12,7 @@ import edu.stanford.nlp.semparse.open.core.eval.IterativeTester;
 import edu.stanford.nlp.semparse.open.dataset.Dataset;
 import edu.stanford.nlp.semparse.open.dataset.Example;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
+import edu.stanford.nlp.semparse.open.model.candidate.CandidateGroup;
 import edu.stanford.nlp.semparse.open.model.feature.FeatureType;
 import fig.basic.Fmt;
 import fig.basic.LogInfo;
@@ -33,6 +34,8 @@ public class LearnerMaxEnt implements Learner {
     public double pruneSmallFeaturesThreshold = 0;
     @Option(gloss = "Keep features that occur at least this many times")
     public int featureMinimumCount = 0;
+    @Option
+    public boolean getOnly1CandidatePerGroup = false;
   }
   public static Options opts = new Options();
 
@@ -92,7 +95,7 @@ public class LearnerMaxEnt implements Learner {
   @Override
   public List<Pair<Candidate, Double>> getRankedCandidates(Example example) {
     List<Pair<Candidate, Double>> answer = Lists.newArrayList();
-    for (Candidate candidate : example.candidates) {
+    for (Candidate candidate : getCandidates(example)) {
       answer.add(new Pair<Candidate, Double>(candidate, getScore(candidate)));
     }
     Collections.sort(answer, new Pair.ReverseSecondComparator<Candidate, Double>());
@@ -123,11 +126,11 @@ public class LearnerMaxEnt implements Learner {
   
   @Override
   public void learn(Dataset dataset, FeatureMatcher additionalFeatureMatcher) {
-    cacheRewards(dataset);
+    dataset.cacheRewards();
     // Select features based on count
     FeatureMatcher featureMatcher;
     if (opts.featureMinimumCount > 0) {
-      FeatureCountPruner pruner = new FeatureCountPruner();
+      FeatureCountPruner pruner = new FeatureCountPruner(beVeryQuiet);
       LogInfo.begin_track("Removing features with count < %d ...", opts.featureMinimumCount);
       for (Example example : dataset.trainExamples)
         pruner.add(example);
@@ -146,19 +149,6 @@ public class LearnerMaxEnt implements Learner {
     params.prune(opts.pruneSmallFeaturesThreshold);
     if (!beVeryQuiet)
       params.write(Execution.getFile("params"));
-  }
-  
-  protected static void cacheRewards(Dataset dataset) {
-    LogInfo.begin_track("cache rewards ...");
-    for (Example example : dataset.trainExamples) {
-      LogInfo.begin_track("Computing rewards for example %s ...", example);
-      for (Candidate candidate : example.candidates) {
-        example.expectedAnswer.reward(candidate);
-      }
-      example.expectedAnswer.frozenReward = true;
-      LogInfo.end_track();
-    }
-    LogInfo.end_track();
   }
   
   protected int trainIter;      // 1, 2, ..., opts.numTrainIters
@@ -201,7 +191,17 @@ public class LearnerMaxEnt implements Learner {
   }
   
   protected List<Candidate> getCandidates(Example example) {
-    return example.candidates;
+    if (!opts.getOnly1CandidatePerGroup) {
+      return example.candidates;
+    } else {
+      List<Candidate> candidates = Lists.newArrayList();
+      for (CandidateGroup group : example.candidateGroups) {
+        if (group.numCandidate() > 0) {
+          candidates.add(group.getCandidates().get(0));
+        }
+      }
+      return candidates;
+    }
   }
   
   protected void performL1Regularization(double cutoff) {

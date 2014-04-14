@@ -20,9 +20,11 @@ import fig.basic.Option;
  */
 public class FeatureTypeNaiveEntityBased extends FeatureType {
   public static class Options {
-    @Option public boolean addCollapsedPhraseShapeFeature = false;
-    @Option public boolean useDiscreteCountNumWords = false;
     @Option public boolean useCountEntities = false;
+    @Option public boolean addPhraseShapeFeature = true;
+    @Option public boolean addCollapsedPhraseShapeFeature = false;
+    @Option public boolean useDiscreteCountNumWords = true;
+    @Option public boolean useMeanSDCountNumWords = false;
   }
   public static Options opts = new Options();
   
@@ -59,14 +61,14 @@ public class FeatureTypeNaiveEntityBased extends FeatureType {
         addQuantizedFeatures(group.features, "entity", "num-entities", group.predictedEntities.size());
       addEntropyFeatures(group.features, "entity", "entity", countEntity);
       addDuplicationFeatures(group.features, "entity", "entity", countEntity);
-      addVotingFeatures(group.features, "entity", "phrase-shape", countPhraseShape);
+      if (opts.addPhraseShapeFeature)
+        addVotingFeatures(group.features, "entity", "phrase-shape", countPhraseShape);
       if (opts.addCollapsedPhraseShapeFeature)
         addVotingFeatures(group.features, "entity", "collapsed-phrase-shape", countCollapsedPhraseShape);
       addVotingFeatures(group.features, "entity", "word-shape", countWordShape);
-      addVotingFeatures(group.features, "entity", "num-word", countNumWord);
       if (opts.useDiscreteCountNumWords)
         addVotingFeatures(group.features, "entity", "num-word", countNumWord);
-      else
+      if (opts.useMeanSDCountNumWords)
         addMeanDeviationFeatures(group.features, "entity", "num-word", countNumWord);
     }
   }

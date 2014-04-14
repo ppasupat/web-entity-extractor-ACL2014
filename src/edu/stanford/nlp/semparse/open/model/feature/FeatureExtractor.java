@@ -19,16 +19,21 @@ public class FeatureExtractor {
       new FeatureTypeNodeBased(),
       new FeatureTypePathBased(),
       new FeatureTypeLinguisticsBased(),
-      new FeatureTypeQueryBased(),
-      new FeatureTypeHoleBased(),
-      new FeatureTypeProximityBased(),
-      new FeatureTypeCutRange());
+      //new FeatureTypeQueryBased(),
+      new FeatureTypeHoleBased()
+      //new FeatureTypeCutRange()
+      );
+  protected final List<FeaturePostProcessor> featurePostProcessors = Lists.newArrayList(
+      (FeaturePostProcessor) new FeaturePostProcessorConjoin());
   
   public void extract(Candidate candidate) {
     if (candidate.features != null) return;
     candidate.features = new FeatureVector();
     for (FeatureType featureType : featureTypes) {
       featureType.extract(candidate);
+    }
+    for (FeaturePostProcessor featurePostProcessor : featurePostProcessors) {
+      featurePostProcessor.process(candidate);
     }
   }
   
@@ -38,6 +43,9 @@ public class FeatureExtractor {
     group.features.add("basic", "bias");
     for (FeatureType featureType : featureTypes) {
       featureType.extract(group);
+    }
+    for (FeaturePostProcessor featurePostProcessor : featurePostProcessors) {
+      featurePostProcessor.process(group);
     }
   }
   

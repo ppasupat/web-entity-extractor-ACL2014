@@ -12,8 +12,6 @@ import edu.stanford.nlp.semparse.open.dataset.Dataset;
 import edu.stanford.nlp.semparse.open.dataset.Example;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
 import edu.stanford.nlp.semparse.open.model.candidate.PathEntry;
-import edu.stanford.nlp.semparse.open.model.candidate.PathUtils;
-import edu.stanford.nlp.semparse.open.model.candidate.TreePattern;
 import fig.basic.LogInfo;
 import fig.basic.MapUtils;
 import fig.basic.Option;
@@ -25,12 +23,15 @@ import fig.basic.ValueComparator;
  */
 public class LearnerBaseline implements Learner {
   public static class Options {
-    @Option public boolean useOnlyTables = false;
     @Option public int baselineSuffixLength = 5;
+    @Option public int baselineMaxNumPatterns = 10000;
     @Option public boolean baselineUseMaxSize = false;    // false = use most frequent
-    @Option public int baselineMaxNumPatterns = 1000;
+    @Option public IndexType baselineIndexType = IndexType.STAR;
+    @Option public boolean baselineBagOfTags = true;
   }
   public static Options opts = new Options();
+  
+  public enum IndexType {NONE, STAR, FULL};
   
   protected IterativeTester iterativeTester;
   public boolean beVeryQuiet = false;
@@ -42,7 +43,7 @@ public class LearnerBaseline implements Learner {
    */
   
   // Map from suffix to count
-  Map<List<PathEntry>, Integer> goodPathCounts;
+  Map<List<String>, Integer> goodPathCounts;
   
   // ============================================================
   // Log
@@ -54,10 +55,10 @@ public class LearnerBaseline implements Learner {
     if (goodPathCounts == null) {
       LogInfo.log("No parameters.");
     } else {
-      List<Map.Entry<List<PathEntry>, Integer>> entries = Lists.newArrayList(goodPathCounts.entrySet());
-      Collections.sort(entries, new ValueComparator<List<PathEntry>, Integer>(true));
-      for (Map.Entry<List<PathEntry>, Integer> entry : entries) {
-        LogInfo.logs("%8d : %s", entry.getValue(), PathUtils.getXPathString(entry.getKey()));
+      List<Map.Entry<List<String>, Integer>> entries = Lists.newArrayList(goodPathCounts.entrySet());
+      Collections.sort(entries, new ValueComparator<List<String>, Integer>(true));
+      for (Map.Entry<List<String>, Integer> entry : entries) {
+        LogInfo.logs("%8d : %s", entry.getValue(), entry.getKey());
       }
     }
     LogInfo.end_track();
@@ -87,7 +88,7 @@ public class LearnerBaseline implements Learner {
   public List<Pair<Candidate, Double>> getRankedCandidates(Example example) {
     List<Pair<Candidate, Double>> answer = Lists.newArrayList();
     for (Candidate candidate : example.candidates) {
-      double score = opts.useOnlyTables ? getScoreOnlyTable(candidate) : getScore(candidate);
+      double score = getScore(candidate);
       answer.add(new Pair<Candidate, Double>(candidate, score));
     }
     Collections.sort(answer, new Pair.ReverseSecondComparator<Candidate, Double>());
@@ -96,23 +97,10 @@ public class LearnerBaseline implements Learner {
   
   
   protected double getScore(Candidate candidate) {
-    List<PathEntry> suffix = PathUtils.getXPathSuffix(candidate.pattern.getPath(), opts.baselineSuffixLength);
+    List<String> suffix = getPathSuffix(candidate);
     Integer frequency = goodPathCounts.get(suffix);
     if (frequency == null) return 0;
     return opts.baselineUseMaxSize ? candidate.predictedEntities.size() : frequency;
-  }
-  
-  /** This is the initial baseline */
-  protected static final PathEntry TR = new PathEntry("tr"), TD = new PathEntry("td", 0);
-  protected double getScoreOnlyTable(Candidate candidate) {
-    TreePattern pattern = candidate.pattern;
-    List<PathEntry> path = pattern.getPath();
-    int n = path.size();
-    if (n >= 2 && path.get(n-2).equals(TR) && path.get(n-1).equals(TD)) {
-      return candidate.numEntities();
-    } else {
-      return 0;
-    }
   }
   
   // ============================================================
@@ -126,34 +114,51 @@ public class LearnerBaseline implements Learner {
   
   @Override
   public void learn(Dataset dataset, FeatureMatcher additionalFeatureMatcher) {
-    if (opts.useOnlyTables) {
-      LogInfo.log("Use only tables -- no training");
-      return;
-    }
-    Map<List<PathEntry>, Integer> pathCounts = Maps.newHashMap();
-    LearnerMaxEnt.cacheRewards(dataset);
+    Map<List<String>, Integer> pathCounts = Maps.newHashMap();
+    dataset.cacheRewards();
     // Learn good tree patterns (path suffix)
-    LogInfo.begin_track("Learning tree patterns ...");
+    if (!beVeryQuiet) LogInfo.begin_track("Learning tree patterns ...");
     for (Example ex : dataset.trainExamples) {
       for (Candidate candidate : ex.candidates) {
         if (candidate.getReward() > 0) {
           // Good candidate -- remember the tree pattern
-          List<PathEntry> path = candidate.pattern.getPath(),
-              suffix = PathUtils.getXPathSuffix(path, opts.baselineSuffixLength);
-          MapUtils.incr(pathCounts, suffix);
+          MapUtils.incr(pathCounts, getPathSuffix(candidate));
         }
       }
     }
-    List<Map.Entry<List<PathEntry>, Integer>> entries = Lists.newArrayList(pathCounts.entrySet());
-    Collections.sort(entries, new ValueComparator<List<PathEntry>, Integer>(true));
+    // Sort by count
+    List<Map.Entry<List<String>, Integer>> entries = Lists.newArrayList(pathCounts.entrySet());
+    Collections.sort(entries, new ValueComparator<List<String>, Integer>(true));
+    // Retain the top n paths
     int n = Math.min(opts.baselineMaxNumPatterns, entries.size());
     goodPathCounts = Maps.newHashMap();
-    for (Map.Entry<List<PathEntry>, Integer> entry : entries.subList(0, n)) {
+    for (Map.Entry<List<String>, Integer> entry : entries.subList(0, n)) {
       goodPathCounts.put(entry.getKey(), entry.getValue());
     }
-    LogInfo.logs("Found %d path patterns.", goodPathCounts.size());
-    LogInfo.end_track();
+    if (!beVeryQuiet) LogInfo.logs("Found %d path patterns.", goodPathCounts.size());
+    if (!beVeryQuiet) LogInfo.end_track();
     iterativeTester.run();
+  }
+  
+  private List<String> getPathSuffix(Candidate candidate) {
+    return getPathSuffix(candidate.pattern.getPath());
+  }
+  
+  private List<String> getPathSuffix(List<PathEntry> path) {
+    List<String> suffix = Lists.newArrayList();
+    int startIndex = Math.max(0, path.size() - opts.baselineSuffixLength);
+    for (PathEntry entry : path.subList(startIndex, path.size())) {
+      String strEntry = "";
+      switch (opts.baselineIndexType) {
+      case NONE: strEntry = entry.tag; break;
+      case STAR: strEntry = entry.tag + (entry.isIndexed() ? "[*]" : ""); break;
+      case FULL: strEntry = entry.toString(); break;
+      }
+      suffix.add(strEntry.intern());
+    }
+    if (opts.baselineBagOfTags)
+      Collections.sort(suffix);
+    return suffix;
   }
   
   // ============================================================
@@ -162,13 +167,11 @@ public class LearnerBaseline implements Learner {
 
   @Override
   public void saveModel(String path) {
-    // TODO Auto-generated method stub
     LogInfo.fail("Not implemented");
   }
 
   @Override
   public void loadModel(String path) {
-    // TODO Auto-generated method stub
     LogInfo.fail("Not implemented");
   }
   

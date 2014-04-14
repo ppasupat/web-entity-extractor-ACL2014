@@ -8,6 +8,8 @@ import com.google.common.collect.Lists;
 
 import edu.stanford.nlp.semparse.open.dataset.entity.TargetEntity;
 import edu.stanford.nlp.semparse.open.dataset.entity.TargetEntityPersonName;
+import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
+import fig.basic.LogInfo;
 
 /**
  * A Dataset represents a data set, which has multiple Examples (data instances).
@@ -80,6 +82,29 @@ public class Dataset {
     List<Example> newTrain = allExamples.subList(0, trainEndIndex);
     List<Example> newTest = allExamples.subList(trainEndIndex, allExamples.size());
     return new Dataset(newTrain, newTest);
+  }
+  
+  // ============================================================
+  // Caching rewards
+  // ============================================================
+  
+  public void cacheRewards() {
+    List<Example> uncached = Lists.newArrayList();
+    for (Example ex : trainExamples)
+      if (!ex.expectedAnswer.frozenReward) uncached.add(ex);
+    for (Example ex : testExamples)
+      if (!ex.expectedAnswer.frozenReward) uncached.add(ex);
+    if (uncached.isEmpty()) return;
+    LogInfo.begin_track("Cache rewards ...");
+    for (Example ex : uncached) {
+      LogInfo.begin_track("Computing rewards for example %s ...", ex);
+      for (Candidate candidate : ex.candidates) {
+        ex.expectedAnswer.reward(candidate);
+      }
+      ex.expectedAnswer.frozenReward = true;
+      LogInfo.end_track();
+    }
+    LogInfo.end_track();
   }
   
   // ============================================================

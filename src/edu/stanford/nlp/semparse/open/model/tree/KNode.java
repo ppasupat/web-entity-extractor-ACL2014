@@ -79,6 +79,13 @@ public class KNode {
     return new KNode(this, type, value, fullText);
   }
   
+  /**
+   * Create a child using the information from the `original` node and return the child. 
+   */
+  public KNode createChild(KNode original) {
+    return new KNode(this, original.type, original.value, original.fullText);
+  }
+  
   public KNode createAttribute(String attributeName, String attributeValue) {
     KNode attributeNode = createChild(Type.ATTR, attributeName, attributeValue);
     attributeNode.createChild(Type.TEXT, attributeValue, attributeValue);
@@ -111,6 +118,10 @@ public class KNode {
       }
     }
     return null;
+  }
+  
+  public List<KNode> getAttributes() {
+    return Collections.unmodifiableList(attributes);
   }
   
   public String getAttribute(String attributeName) {

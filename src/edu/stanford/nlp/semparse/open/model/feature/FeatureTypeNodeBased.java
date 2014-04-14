@@ -1,12 +1,14 @@
 package edu.stanford.nlp.semparse.open.model.feature;
 
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Sets;
 
+import edu.stanford.nlp.semparse.open.model.FeatureVector;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
 import edu.stanford.nlp.semparse.open.model.candidate.CandidateGroup;
 import edu.stanford.nlp.semparse.open.model.tree.KNode;
@@ -20,6 +22,8 @@ public class FeatureTypeNodeBased extends FeatureType {
     @Option public boolean rangeUseCollapsedTimestamp = true;
     @Option public boolean soaUseIndexedFeatures = false;
     @Option public boolean soaUseNoIndexFeatures = true;
+    @Option public boolean soaUseIdClassFeatures = true;
+    @Option public boolean soaAverage = false;
   }
   public static Options opts = new Options();
   
@@ -36,6 +40,7 @@ public class FeatureTypeNodeBased extends FeatureType {
   
   public void extractSelfOrAncestorsFeatures(CandidateGroup group) {
     if (isAllowedDomain("self-or-ancestors")) {
+      FeatureVector v = new FeatureVector();
       // Majority id / class / number of children of the nodes and parents
       Set<KNode> currentKNodes = Sets.newHashSet(group.selectedNodes);
       for (int ancestorCount = 0; ancestorCount < FeatureType.opts.maxAncestorCount; ancestorCount++) {
@@ -75,26 +80,38 @@ public class FeatureTypeNodeBased extends FeatureType {
         // With indexed prefix
         if (opts.soaUseIndexedFeatures) {
           String prefix = "(n-" + ancestorCount + ")-";
-          addVotingFeatures(group.features, domain, prefix + "tag", countTag);
-          addVotingFeatures(group.features, domain, prefix + "id", countId, true);
-          addVotingFeatures(group.features, domain, prefix + "class", countClass, true);
-          addVotingFeatures(group.features, domain, prefix + "num-children", countNumChildren);
-          addVotingFeatures(group.features, domain, prefix + "child-index", countChildIndex, false, false);
-          addPercentFeatures(group.features, domain, prefix + "children-of-parent", percentChildrenOfParents);
-          if (parents.size() == 1) group.features.add(domain, prefix + "same-parent");
+          addVotingFeatures(v, domain, prefix + "tag", countTag);
+          if (opts.soaUseIdClassFeatures) {
+            addVotingFeatures(v, domain, prefix + "id", countId, true);
+            addVotingFeatures(v, domain, prefix + "class", countClass, true);
+          }
+          addVotingFeatures(v, domain, prefix + "num-children", countNumChildren);
+          addVotingFeatures(v, domain, prefix + "child-index", countChildIndex, false, false);
+          addPercentFeatures(v, domain, prefix + "children-of-parent", percentChildrenOfParents);
+          if (parents.size() == 1) v.add(domain, prefix + "same-parent");
         }
         // Without indexed prefix
         if (opts.soaUseNoIndexFeatures) {
-          addVotingFeatures(group.features, domain, "tag", countTag);
-          addVotingFeatures(group.features, domain, "id", countId, true);
-          addVotingFeatures(group.features, domain, "class", countClass, true);
-          addVotingFeatures(group.features, domain, "num-children", countNumChildren);
-          addVotingFeatures(group.features, domain, "child-index", countChildIndex, false, false);
-          addPercentFeatures(group.features, domain, "children-of-parent", percentChildrenOfParents);
-          if (parents.size() == 1) group.features.add(domain, "same-parent");
+          addVotingFeatures(v, domain, "tag", countTag);
+          if (opts.soaUseIdClassFeatures) {
+            addVotingFeatures(v, domain, "id", countId, true);
+            addVotingFeatures(v, domain, "class", countClass, true);
+          }
+          addVotingFeatures(v, domain, "num-children", countNumChildren);
+          addVotingFeatures(v, domain, "child-index", countChildIndex, false, false);
+          addPercentFeatures(v, domain, "children-of-parent", percentChildrenOfParents);
+          if (parents.size() == 1) v.add(domain, "same-parent");
         }
         // Traverse up the tree
         currentKNodes = parents;
+      }
+      // Add features
+      if (opts.soaAverage) {
+        for (Entry<String, Double> entry : v.toMap().entrySet()) {
+          group.features.addFromString(entry.getKey(), entry.getValue() / FeatureType.opts.maxAncestorCount);
+        }
+      } else {
+        group.features.add(v);
       }
     }
   }
