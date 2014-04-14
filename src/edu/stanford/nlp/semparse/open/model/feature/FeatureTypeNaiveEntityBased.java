@@ -24,7 +24,7 @@ public class FeatureTypeNaiveEntityBased extends FeatureType {
     @Option public boolean addPhraseShapeFeature = true;
     @Option public boolean addCollapsedPhraseShapeFeature = false;
     @Option public boolean useDiscreteCountNumWords = true;
-    @Option public boolean useMeanSDCountNumWords = false;
+    @Option public boolean useMeanSDCountNumWords = true;
   }
   public static Options opts = new Options();
   
