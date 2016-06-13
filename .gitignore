@@ -5,10 +5,12 @@
 /cache/*.gz
 /datasets/*/
 /classes
+/models
 
 .classpath
 .project
 *.cache
 *.pyc
 *.bak
+*.swp
 *~

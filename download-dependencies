@@ -24,7 +24,7 @@ def run(command)
   end
 end
 
-BASE_URL = 'http://nlp.stanford.edu/software/web-entity-extractor-ACL2014/'
+BASE_URL = 'http://nlp.stanford.edu/software/sempre/web-entity-extractor-ACL2014/'
 def download(release, path, baseUrl=BASE_URL)
   url = baseUrl + '/release-' + release.to_s
   isDirectory = path.end_with?('/')
