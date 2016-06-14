@@ -1,10 +1,8 @@
 package edu.stanford.nlp.semparse.open;
 
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import com.google.common.collect.Lists;
 
 import edu.stanford.nlp.semparse.open.core.AllOptions;
 import edu.stanford.nlp.semparse.open.core.InteractiveDemo;
@@ -125,14 +123,14 @@ public class Main implements Runnable {
   // ============================================================
 
   private List<IterativeTester> runSingle(Dataset dataset) {
-    List<IterativeTester> iterativeTesters = Lists.newArrayList();
+    List<IterativeTester> iterativeTesters = new ArrayList<>();
     iterativeTesters.add(trainAndTest(dataset).getIterativeTester());
     return iterativeTesters;
   }
 
   private List<IterativeTester> runParallel(Dataset dataset) {
     // Shuffle dataset
-    List<ParallelizedTrainer> tasks = Lists.newArrayList();
+    List<ParallelizedTrainer> tasks = new ArrayList<>();
     Dataset shuffled = dataset;
     for (int i = 0; i < opts.folds; i++) {
       tasks.add(new ParallelizedTrainer(shuffled, i != 0));
@@ -145,7 +143,7 @@ public class Main implements Runnable {
     List<Future<OpenSemanticParser>> parsers = Parallelizer.runAndReturnStuff(tasks);
     OpenSemanticParser.opts.logVerbosity = oldLogVerbosity;
     // Accumulate OpenSemanticParser and test on the first random split
-    List<IterativeTester> iterativeTesters = Lists.newArrayList();
+    List<IterativeTester> iterativeTesters = new ArrayList<>();
     try {
       for (int i = 0; i < opts.folds; i++)
         iterativeTesters.add(parsers.get(i).get().getIterativeTester());
@@ -211,7 +209,7 @@ public class Main implements Runnable {
     for (int i = 0; i < opts.folds; i++)
       iterativeTesters.get(i).summarize();
     if (opts.folds > 1) {
-      List<EvaluatorStatistics> trainStats = Lists.newArrayList(), testStats = Lists.newArrayList();
+      List<EvaluatorStatistics> trainStats = new ArrayList<>(), testStats = new ArrayList<>();
       for (IterativeTester tester : iterativeTesters) {
         trainStats.add(tester.getLastTrainStat());
         testStats.add(tester.getLastTestStat());

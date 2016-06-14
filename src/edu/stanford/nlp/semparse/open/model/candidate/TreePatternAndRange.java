@@ -1,10 +1,6 @@
 package edu.stanford.nlp.semparse.open.model.candidate;
 
-import java.util.Collection;
-import java.util.List;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.model.feature.FeatureExtractor;
 import edu.stanford.nlp.semparse.open.model.tree.KNode;
@@ -39,14 +35,14 @@ public class TreePatternAndRange extends TreePattern {
   }
   
   @Override
-  public ImmutableList<KNode> getNodes() {
+  public List<KNode> getNodes() {
     return recordNodes.subList(rangeStart, rangeEnd);
   }
 
   /* It works, but is painfully slow. */
   @Deprecated
   public static List<Candidate> generateCutRangeCandidates(Candidate candidate) {
-    List<Candidate> candidates = Lists.newArrayList();
+    List<Candidate> candidates = new ArrayList<>();
     // Remove a few stuff from both sides
     int n = candidate.numEntities();
     for (int i = 0; i < Math.min(5, n - CandidateGenerator.opts.minNumCandidateEntity); i++) {
@@ -69,7 +65,7 @@ public class TreePatternAndRange extends TreePattern {
    * Only suitable for experiments only.
    */
   public static List<CandidateGroup> generateDummyCutRangeCandidateGroups(CandidateGroup group) {
-    List<CandidateGroup> candidateGroups = Lists.newArrayList();
+    List<CandidateGroup> candidateGroups = new ArrayList<>();
     // Remove a few stuff from both sides
     int n = group.numEntities();
     for (int i = 0; i < Math.min(5, n - CandidateGenerator.opts.minNumCandidateEntity); i++) {

@@ -9,7 +9,7 @@ import edu.stanford.nlp.semparse.open.model.tree.KNode;
  * An XPath is just a list of PathEntry.
  * Utilities involving XPath are in PathUtils class. 
  * 
- * Use an ImmutableList for a fixed XPath (e.g. in TreePattern).
+ * Use an List for a fixed XPath (e.g. in TreePattern).
  * The main benefit is that the paths can be hashed and compared consistently.
  * 
  * Use a normal List for an editable path.

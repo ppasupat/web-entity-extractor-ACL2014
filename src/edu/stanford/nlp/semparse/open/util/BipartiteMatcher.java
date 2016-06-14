@@ -1,14 +1,6 @@
 package edu.stanford.nlp.semparse.open.util;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.dataset.entity.TargetEntity;
 
@@ -19,12 +11,12 @@ public class BipartiteMatcher {
   
   private final Map<Object, Integer> fromMap;
   private final Map<Object, Integer> toMap;
-  private final Multimap<Integer, Integer> edges;
+  private final Map<Integer, List<Integer>> edges;
 
   public BipartiteMatcher() {
-    this.fromMap = Maps.newHashMap();
-    this.toMap = Maps.newHashMap();
-    this.edges = ArrayListMultimap.create();
+    this.fromMap = new HashMap<>();
+    this.toMap = new HashMap<>();
+    this.edges = new HashMap<>();
   }
 
   public BipartiteMatcher(List<TargetEntity> targetEntities, List<String> predictedEntities) {
@@ -44,14 +36,17 @@ public class BipartiteMatcher {
     if (from == null) {
       from = 2 + fromMap.size();
       fromMap.put(fromObj, from);
-      edges.put(SOURCE, from);
+      if (!edges.containsKey(SOURCE)) edges.put(SOURCE, new ArrayList<>());
+      edges.get(SOURCE).add(from);
     }
     if (to == null) {
       to = - 2 - toMap.size();
       toMap.put(toObj, to);
-      edges.put(to, SINK);
+      if (!edges.containsKey(to)) edges.put(to, new ArrayList<>());
+      edges.get(to).add(SINK);
     }
-    edges.put(from, to);
+    if (!edges.containsKey(from)) edges.put(from, new ArrayList<>());
+    edges.get(from).add(to);
   }
   
   private List<Integer> foundPath;
@@ -59,14 +54,15 @@ public class BipartiteMatcher {
   
   public int findMaximumMatch() {
     int count = 0;
-    this.foundPath = Lists.newArrayList();
-    this.foundNodes = Sets.newHashSet();
+    this.foundPath = new ArrayList<>();
+    this.foundNodes = new HashSet<>();
     while (findPath(SOURCE)) {
       count++;
       for (int i = 0; i < foundPath.size() - 1; i++) {
         int from = foundPath.get(i), to = foundPath.get(i+1);
-        edges.remove(from, to);
-        edges.put(to, from);
+        edges.get(from).remove(Integer.valueOf(to));
+        if (!edges.containsKey(to)) edges.put(to, new ArrayList<>());
+        edges.get(to).add(from);
       }
       foundPath.clear();
       foundNodes.clear();

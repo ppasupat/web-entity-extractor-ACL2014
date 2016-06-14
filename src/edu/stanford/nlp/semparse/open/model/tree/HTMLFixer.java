@@ -1,13 +1,12 @@
 package edu.stanford.nlp.semparse.open.model.tree;
 
-import java.util.List;
+import java.util.*;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
-import com.google.common.collect.Lists;
 
 import fig.basic.LogInfo;
 
@@ -44,7 +43,7 @@ public class HTMLFixer {
     // Fix colspan
     int numColumns = 0;
     for (Element tr : tbody.children()) {
-      for (Element cell : Lists.newArrayList(tr.children())) {
+      for (Element cell : new ArrayList<>(tr.children())) {
         int colspan = parseIntHard(cell.attr("colspan")), rowspan = parseIntHard(cell.attr("rowspan"));
         if (colspan <= 1) continue;
         cell.attr("old-colspan", cell.attr("colspan"));
@@ -64,7 +63,7 @@ public class HTMLFixer {
     String[] tags = new String[numColumns];   // For each column, track what type of elements to create
     for (Element tr : tbody.children()) {
       Element currentCell = null;
-      List<Element> cells = Lists.newArrayList(tr.children());
+      List<Element> cells = new ArrayList<>(tr.children());
       for (int i = 0, k = 0; i < numColumns; i++) {
         if (counts[i] > 0) {
           // Create a new element caused by rowspan

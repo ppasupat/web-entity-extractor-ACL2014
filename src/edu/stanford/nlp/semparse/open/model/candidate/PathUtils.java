@@ -1,9 +1,6 @@
 package edu.stanford.nlp.semparse.open.model.candidate;
 
-import java.util.Collection;
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.model.tree.KNode;
 import edu.stanford.nlp.semparse.open.model.tree.KNodeUtils;
@@ -41,7 +38,7 @@ public class PathUtils {
   }
   
   public static List<PathEntry> getXPathSuffix(List<PathEntry> path, int amount) {
-    List<PathEntry> suffix = Lists.newArrayList();
+    List<PathEntry> suffix = new ArrayList<>();
     int startIndex = Math.max(0, path.size() - amount);
     for (PathEntry entry : path.subList(startIndex, path.size())) {
       suffix.add(entry);
@@ -50,7 +47,7 @@ public class PathUtils {
   }
   
   public static List<PathEntry> getXPathSuffixNoIndex(List<PathEntry> path, int amount) {
-    List<PathEntry> suffix = Lists.newArrayList();
+    List<PathEntry> suffix = new ArrayList<>();
     int startIndex = Math.max(0, path.size() - amount);
     for (PathEntry entry : path.subList(startIndex, path.size())) {
       suffix.add(entry.getNoIndexVersion());

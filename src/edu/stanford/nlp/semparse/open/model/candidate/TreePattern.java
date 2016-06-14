@@ -1,9 +1,6 @@
 package edu.stanford.nlp.semparse.open.model.candidate;
 
-import java.util.Collection;
-import java.util.List;
-
-import com.google.common.collect.ImmutableList;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.model.tree.KNode;
 
@@ -13,13 +10,13 @@ import edu.stanford.nlp.semparse.open.model.tree.KNode;
 public class TreePattern {
 
   protected final KNode rootNode;
-  protected final ImmutableList<PathEntry> recordPath;
-  protected final ImmutableList<KNode> recordNodes;
+  protected final List<PathEntry> recordPath;
+  protected final List<KNode> recordNodes;
   
   public TreePattern(KNode rootNode, Collection<PathEntry> recordPath, Collection<KNode> recordNodes) {
     this.rootNode = rootNode;
-    this.recordPath = ImmutableList.copyOf(recordPath);
-    this.recordNodes = ImmutableList.copyOf(recordNodes);
+    this.recordPath = new ArrayList<>(recordPath);
+    this.recordNodes = new ArrayList<>(recordNodes);
   }
 
   @Override public String toString() {

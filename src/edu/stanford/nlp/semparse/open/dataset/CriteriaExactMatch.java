@@ -1,10 +1,6 @@
 package edu.stanford.nlp.semparse.open.dataset;
 
-import java.util.List;
-import java.util.Map;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.dataset.entity.TargetEntity;
 import edu.stanford.nlp.semparse.open.util.BipartiteMatcher;
@@ -16,7 +12,7 @@ public class CriteriaExactMatch implements Criteria {
   public final List<TargetEntity> targetEntities;
   
   public CriteriaExactMatch(TargetEntity... targetEntities) {
-    this.targetEntities = Lists.newArrayList(targetEntities);
+    this.targetEntities = Arrays.asList(targetEntities);
   }
   
   public CriteriaExactMatch(List<TargetEntity> targetEntities) {
@@ -41,7 +37,7 @@ public class CriteriaExactMatch implements Criteria {
     return 0;
   }
   
-  Map<List<String>, IRScore> irScoreCache = Maps.newHashMap();
+  Map<List<String>, IRScore> irScoreCache = new HashMap<>();
 
   @Override
   public IRScore getIRScore(List<String> predictedEntities) {

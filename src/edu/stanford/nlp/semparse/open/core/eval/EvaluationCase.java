@@ -1,8 +1,6 @@
 package edu.stanford.nlp.semparse.open.core.eval;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.core.OpenSemanticParser;
 import edu.stanford.nlp.semparse.open.dataset.Example;
@@ -39,7 +37,7 @@ public abstract class EvaluationCase {
     if (best == null) {
       predIRScoreOnBest = firstTrueIRScoreOnBest = null;
     } else {
-      List<TargetEntity> bestTrueEntites = Lists.newArrayList();
+      List<TargetEntity> bestTrueEntites = new ArrayList<>();
       for (String entity : best.candidate.predictedEntities) {
         bestTrueEntites.add(new TargetEntityNearMatch(entity));
       }

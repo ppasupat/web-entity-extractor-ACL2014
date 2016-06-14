@@ -1,12 +1,6 @@
 package edu.stanford.nlp.semparse.open.model;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.core.eval.IterativeTester;
 import edu.stanford.nlp.semparse.open.dataset.Dataset;
@@ -94,7 +88,7 @@ public class LearnerMaxEnt implements Learner {
    */
   @Override
   public List<Pair<Candidate, Double>> getRankedCandidates(Example example) {
-    List<Pair<Candidate, Double>> answer = Lists.newArrayList();
+    List<Pair<Candidate, Double>> answer = new ArrayList<>();
     for (Candidate candidate : getCandidates(example)) {
       answer.add(new Pair<Candidate, Double>(candidate, getScore(candidate)));
     }
@@ -194,7 +188,7 @@ public class LearnerMaxEnt implements Learner {
     if (!opts.getOnly1CandidatePerGroup) {
       return example.candidates;
     } else {
-      List<Candidate> candidates = Lists.newArrayList();
+      List<Candidate> candidates = new ArrayList<>();
       for (CandidateGroup group : example.candidateGroups) {
         if (group.numCandidate() > 0) {
           candidates.add(group.getCandidates().get(0));
@@ -229,7 +223,7 @@ public class LearnerMaxEnt implements Learner {
     }
     
     // Compute the gradient
-    Map<String, Double> gradient = Maps.newHashMap();
+    Map<String, Double> gradient = new HashMap<>();
     for (int i = 0; i < expectationDiff.length; i++) {
       Candidate candidate = candidates.get(i);
       candidate.group.features.increment(expectationDiff[i], gradient, featureMatcher);

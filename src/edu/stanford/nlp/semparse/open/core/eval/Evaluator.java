@@ -1,13 +1,10 @@
 package edu.stanford.nlp.semparse.open.core.eval;
 
-import java.util.List;
-
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multiset;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.dataset.Example;
 import edu.stanford.nlp.semparse.open.model.Learner;
+import edu.stanford.nlp.semparse.open.util.Multiset;
 import fig.basic.Fmt;
 import fig.basic.ListUtils;
 import fig.basic.LogInfo;
@@ -38,10 +35,10 @@ public class Evaluator {
   public Evaluator(String testSuiteName, Learner learner) {
     this.testSuiteName = testSuiteName;
     this.learner = learner;
-    successes = Lists.newArrayList();
-    normalFails = Lists.newArrayList();
-    superFails = Lists.newArrayList();
-    firstTrueUniqueRanks = HashMultiset.create();
+    successes = new ArrayList<>();
+    normalFails = new ArrayList<>();
+    superFails = new ArrayList<>();
+    firstTrueUniqueRanks = new Multiset<>();
   }
   
   public EvaluationCase add(Example ex, CandidateStatistics pred, CandidateStatistics firstTrue, CandidateStatistics best) {

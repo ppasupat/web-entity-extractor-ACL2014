@@ -1,11 +1,6 @@
 package edu.stanford.nlp.semparse.open.model;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.core.eval.IterativeTester;
 import edu.stanford.nlp.semparse.open.dataset.Dataset;
@@ -55,7 +50,7 @@ public class LearnerBaseline implements Learner {
     if (goodPathCounts == null) {
       LogInfo.log("No parameters.");
     } else {
-      List<Map.Entry<List<String>, Integer>> entries = Lists.newArrayList(goodPathCounts.entrySet());
+      List<Map.Entry<List<String>, Integer>> entries = new ArrayList<>(goodPathCounts.entrySet());
       Collections.sort(entries, new ValueComparator<List<String>, Integer>(true));
       for (Map.Entry<List<String>, Integer> entry : entries) {
         LogInfo.logs("%8d : %s", entry.getValue(), entry.getKey());
@@ -86,7 +81,7 @@ public class LearnerBaseline implements Learner {
   
   @Override
   public List<Pair<Candidate, Double>> getRankedCandidates(Example example) {
-    List<Pair<Candidate, Double>> answer = Lists.newArrayList();
+    List<Pair<Candidate, Double>> answer = new ArrayList<>();
     for (Candidate candidate : example.candidates) {
       double score = getScore(candidate);
       answer.add(new Pair<Candidate, Double>(candidate, score));
@@ -114,7 +109,7 @@ public class LearnerBaseline implements Learner {
   
   @Override
   public void learn(Dataset dataset, FeatureMatcher additionalFeatureMatcher) {
-    Map<List<String>, Integer> pathCounts = Maps.newHashMap();
+    Map<List<String>, Integer> pathCounts = new HashMap<>();
     dataset.cacheRewards();
     // Learn good tree patterns (path suffix)
     if (!beVeryQuiet) LogInfo.begin_track("Learning tree patterns ...");
@@ -127,11 +122,11 @@ public class LearnerBaseline implements Learner {
       }
     }
     // Sort by count
-    List<Map.Entry<List<String>, Integer>> entries = Lists.newArrayList(pathCounts.entrySet());
+    List<Map.Entry<List<String>, Integer>> entries = new ArrayList<>(pathCounts.entrySet());
     Collections.sort(entries, new ValueComparator<List<String>, Integer>(true));
     // Retain the top n paths
     int n = Math.min(opts.baselineMaxNumPatterns, entries.size());
-    goodPathCounts = Maps.newHashMap();
+    goodPathCounts = new HashMap<>();
     for (Map.Entry<List<String>, Integer> entry : entries.subList(0, n)) {
       goodPathCounts.put(entry.getKey(), entry.getValue());
     }
@@ -145,7 +140,7 @@ public class LearnerBaseline implements Learner {
   }
   
   private List<String> getPathSuffix(List<PathEntry> path) {
-    List<String> suffix = Lists.newArrayList();
+    List<String> suffix = new ArrayList<>();
     int startIndex = Math.max(0, path.size() - opts.baselineSuffixLength);
     for (PathEntry entry : path.subList(startIndex, path.size())) {
       String strEntry = "";

@@ -2,13 +2,11 @@ package edu.stanford.nlp.semparse.open.ling;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
-
-import com.google.common.base.Charsets;
-import com.google.common.collect.Maps;
+import java.util.*;
 
 import fig.basic.LogInfo;
 import fig.basic.Option;
@@ -25,9 +23,9 @@ public class QueryTypeTable {
     if (queryTypeMap != null || opts.queryTypeFilename == null || opts.queryTypeFilename.isEmpty()) return;
     Path dataPath = Paths.get(opts.queryTypeFilename);
     LogInfo.logs("Reading query types from %s", dataPath);
-    try (BufferedReader in = Files.newBufferedReader(dataPath, Charsets.UTF_8)) {
-      queryHeadwordMap = Maps.newHashMap();
-      queryTypeMap = Maps.newHashMap();
+    try (BufferedReader in = Files.newBufferedReader(dataPath, Charset.forName("UTF-8"))) {
+      queryHeadwordMap = new HashMap<>();
+      queryTypeMap = new HashMap<>();
       String line = null;
       while ((line = in.readLine()) != null) {
         String[] tokens = line.split("\t");

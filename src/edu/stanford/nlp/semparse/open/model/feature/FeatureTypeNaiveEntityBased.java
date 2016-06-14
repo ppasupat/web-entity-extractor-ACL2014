@@ -1,17 +1,12 @@
 package edu.stanford.nlp.semparse.open.model.feature;
 
-import java.util.Map;
-import java.util.Set;
-
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Sets;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.ling.FrequencyTable;
 import edu.stanford.nlp.semparse.open.ling.LingUtils;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
 import edu.stanford.nlp.semparse.open.model.candidate.CandidateGroup;
+import edu.stanford.nlp.semparse.open.util.Multiset;
 import fig.basic.MapUtils;
 import fig.basic.Option;
 
@@ -41,11 +36,11 @@ public class FeatureTypeNaiveEntityBased extends FeatureType {
   
   protected void  extractEntityFeatures(CandidateGroup group) {
     if (isAllowedDomain("entity")) {
-      Multiset<String> countEntity = HashMultiset.create(),
-                  countPhraseShape = HashMultiset.create(),
-         countCollapsedPhraseShape = HashMultiset.create(),
-                    countWordShape = HashMultiset.create();
-      Multiset<Integer> countNumWord = HashMultiset.create();
+      Multiset<String> countEntity = new Multiset<>(),
+                  countPhraseShape = new Multiset<>(),
+         countCollapsedPhraseShape = new Multiset<>(),
+                    countWordShape = new Multiset<>();
+      Multiset<Integer> countNumWord = new Multiset<>();
       for (String entity : group.predictedEntities) {
         countEntity.add(entity);
         String wordForm = LingUtils.computePhraseShape(entity);
@@ -73,20 +68,20 @@ public class FeatureTypeNaiveEntityBased extends FeatureType {
     }
   }
   
-  protected static Set<String> BADWORDS = Sets.newHashSet(
+  protected static Set<String> BADWORDS = new HashSet<>(Arrays.asList(
       "com", "new", "about", "my", "home", "search",
       "information", "view", "page", "site", "click",
       "http", "contact", "www", "ord", "free", "now", "subscribe",
       "see", "service", "services", "online", "re", "data",
       "email", "top", "find", "system", "support", "comments",
-      "policy", "last", "privacy", "post", "date", "time", "print");
+      "policy", "last", "privacy", "post", "date", "time", "print"));
   
   
   protected void extractDocumentFrequencyFeatures(CandidateGroup group) {
     if (isAllowedDomain("token-freq")) {
       // Oracle experiment: use a fixed set of words
       int numTokens = 0, numBadWords = 0, numDigits = 0;
-      Map<Integer, Integer> numFrequentWords = Maps.newHashMap();
+      Map<Integer, Integer> numFrequentWords = new HashMap<>();
       for (String entity : group.predictedEntities) {
         for (String token : LingUtils.getAlphaOrNumericTokens(entity)) {
           numTokens++;

@@ -1,8 +1,6 @@
 package edu.stanford.nlp.semparse.open.core.eval;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.Main;
 import edu.stanford.nlp.semparse.open.core.OpenSemanticParser;
@@ -21,8 +19,8 @@ public class IterativeTester {
   public IterativeTester(OpenSemanticParser openSemanticParser, Dataset dataset) {
     this.openSemanticParser = openSemanticParser;
     this.dataset = dataset;
-    this.trainStats = Lists.newArrayList();
-    this.testStats = Lists.newArrayList();
+    this.trainStats = new ArrayList<>();
+    this.testStats = new ArrayList<>();
   }
   
   public void run() {

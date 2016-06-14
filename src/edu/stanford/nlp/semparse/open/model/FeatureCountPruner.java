@@ -1,19 +1,15 @@
 package edu.stanford.nlp.semparse.open.model;
 
-import java.util.Iterator;
-import java.util.Set;
-
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Sets;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.dataset.Example;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
+import edu.stanford.nlp.semparse.open.util.Multiset;
 import fig.basic.LogInfo;
 
 public class FeatureCountPruner implements FeatureMatcher {
 
-  public Multiset<String> counts = HashMultiset.create();
+  public Multiset<String> counts = new Multiset<>();
   public boolean beVeryQuiet;
   
   public FeatureCountPruner(boolean beVeryQuiet) {
@@ -27,7 +23,7 @@ public class FeatureCountPruner implements FeatureMatcher {
    */
   public void add(Example example) {
     if (!beVeryQuiet) LogInfo.begin_track("Collecting features from %s ...", example);
-    Set<String> uniqued = Sets.newHashSet();
+    Set<String> uniqued = new HashSet<>();
     for (Candidate candidate : example.candidates) {
       for (String name : candidate.getCombinedFeatures().keySet()) {
         uniqued.add(name);
@@ -43,10 +39,7 @@ public class FeatureCountPruner implements FeatureMatcher {
   public void applyThreshold(int minimumCount) {
     if (!beVeryQuiet) LogInfo.begin_track("Pruning features with count < %d ...", minimumCount);
     if (!beVeryQuiet) LogInfo.logs("Original #Features: %d", counts.elementSet().size());
-    Iterator<String> iter = counts.iterator();
-    while (iter.hasNext()) {
-      if (counts.count(iter.next()) < minimumCount) iter.remove();
-    }
+    counts = counts.getPrunedByCount(minimumCount);
     if (!beVeryQuiet) LogInfo.logs("Pruned #Features: %d", counts.elementSet().size());
     if (!beVeryQuiet) LogInfo.end_track();
   }

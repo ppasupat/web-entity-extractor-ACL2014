@@ -1,9 +1,6 @@
 package edu.stanford.nlp.semparse.open.model;
 
-import java.util.Collections;
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.dataset.Example;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
@@ -31,7 +28,7 @@ public class LearnerMaxEntWithBeamSearch extends LearnerMaxEnt {
   protected List<Candidate> getBeamSearchedCandidates(Example example) {
     List<Pair<Candidate, Double>> rankedCandidates = super.getRankedCandidates(example);
     rankedCandidates = rankedCandidates.subList(0, Math.min(opts.beamSize, rankedCandidates.size()));
-    List<Candidate> derivedCandidates = Lists.newArrayList();
+    List<Candidate> derivedCandidates = new ArrayList<>();
     for (Pair<Candidate, Double> entry : rankedCandidates) {
       derivedCandidates.addAll(getDerivedCandidates(entry.getFirst()));
     }
@@ -55,7 +52,7 @@ public class LearnerMaxEntWithBeamSearch extends LearnerMaxEnt {
   
   @Override
   public List<Pair<Candidate, Double>> getRankedCandidates(Example example) {
-    List<Pair<Candidate, Double>> answer = Lists.newArrayList();
+    List<Pair<Candidate, Double>> answer = new ArrayList<>();
     for (Candidate candidate : getBeamSearchedCandidates(example)) {
       double score = candidate.features.dotProduct(params);
       answer.add(new Pair<Candidate, Double>(candidate, score));

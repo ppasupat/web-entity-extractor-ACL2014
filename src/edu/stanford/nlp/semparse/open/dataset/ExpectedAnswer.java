@@ -1,10 +1,7 @@
 package edu.stanford.nlp.semparse.open.dataset;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.google.common.collect.Lists;
 
 import edu.stanford.nlp.semparse.open.core.eval.CandidateStatistics;
 import edu.stanford.nlp.semparse.open.dataset.entity.TargetEntity;
@@ -24,15 +21,15 @@ public abstract class ExpectedAnswer {
   public final List<TargetEntity> targetEntities;
   
   public ExpectedAnswer(TargetEntity... targetEntities) {
-    this.targetEntities = Lists.newArrayList(targetEntities);
+    this.targetEntities = Arrays.asList(targetEntities);
   }
   
   public ExpectedAnswer(List<TargetEntity> targetEntities) {
-    this.targetEntities = Lists.newArrayList(targetEntities);
+    this.targetEntities = new ArrayList<>(targetEntities);
   }
   
   public ExpectedAnswer(String... targetStrings) {
-    this.targetEntities = Lists.newArrayList();
+    this.targetEntities = new ArrayList<>();
     for (String targetString : targetStrings) {
       this.targetEntities.add(new TargetEntityString(targetString));
     }

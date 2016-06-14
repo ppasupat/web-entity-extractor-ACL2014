@@ -1,8 +1,6 @@
 package edu.stanford.nlp.semparse.open.ling;
 
-import java.util.Collection;
-
-import com.google.common.collect.Lists;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.ling.LingData.POSType;
 import edu.stanford.nlp.semparse.open.model.FeatureVector;
@@ -54,7 +52,7 @@ public class AveragedWordVector {
   
   public AveragedWordVector(String phrase) {
     // Slightly inefficient, but will not be called often.
-    this(Lists.newArrayList(phrase));
+    this(Arrays.asList(phrase));
   }
   
   public double[] get(boolean freqWeighted, boolean openPOSOnly) {

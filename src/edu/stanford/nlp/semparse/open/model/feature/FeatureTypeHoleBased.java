@@ -1,14 +1,6 @@
 package edu.stanford.nlp.semparse.open.model.feature;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Sets;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.ling.BrownClusterTable;
 import edu.stanford.nlp.semparse.open.ling.LingData;
@@ -16,6 +8,7 @@ import edu.stanford.nlp.semparse.open.ling.LingUtils;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
 import edu.stanford.nlp.semparse.open.model.candidate.CandidateGroup;
 import edu.stanford.nlp.semparse.open.model.tree.KNode;
+import edu.stanford.nlp.semparse.open.util.Multiset;
 import fig.basic.LogInfo;
 import fig.basic.Option;
 
@@ -27,7 +20,7 @@ import fig.basic.Option;
 public class FeatureTypeHoleBased extends FeatureType {
   public static class Options {
     @Option public boolean holeUseTag = true;
-    @Option public List<Integer> headerPrefixes = Lists.newArrayList();
+    @Option public List<Integer> headerPrefixes = new ArrayList<>();
     @Option public boolean headerBinary = false;
   }
   public static Options opts = new Options();
@@ -45,16 +38,16 @@ public class FeatureTypeHoleBased extends FeatureType {
   protected void extractHoleBasedFeatures(CandidateGroup group) {
     if (isAllowedDomain("hole") || isAllowedDomain("header")) {
       List<KNode> currentKNodes = group.selectedNodes;
-      List<Integer> singleAnyIndexStack = Lists.newArrayList();
-      Multiset<String> headers = HashMultiset.create();
+      List<Integer> singleAnyIndexStack = new ArrayList<>();
+      Multiset<String> headers = new Multiset<>();
       for (int ancestorCount = 0; ancestorCount < FeatureType.opts.maxAncestorCount; ancestorCount++) {
         // Group the nodes based on parents
-        List<KNode> parents = Lists.newArrayList();
-        Map<KNode, List<KNode>> parentToCurrent = Maps.newHashMap();
+        List<KNode> parents = new ArrayList<>();
+        Map<KNode, List<KNode>> parentToCurrent = new HashMap<>();
         for (KNode node : currentKNodes) {
           List<KNode> siblings = parentToCurrent.get(node.parent);
           if (siblings == null) {
-            siblings = Lists.newArrayList();
+            siblings = new ArrayList<>();
             parentToCurrent.put(node.parent, siblings);
             parents.add(node.parent);
           }
@@ -68,7 +61,7 @@ public class FeatureTypeHoleBased extends FeatureType {
         boolean anyHoleTop = false, anyHoleMiddle = false, anyHoleBottom = false;
         boolean tagHoleTop = false, tagHoleMiddle = false, tagHoleBottom = false;
         boolean anyAll = false, tagAll = false, single = false;
-        Set<Integer> anyIndices = Sets.newHashSet();
+        Set<Integer> anyIndices = new HashSet<>();
         for (KNode parent : parents) {
           List<KNode> siblings = parentToCurrent.get(parent);
           List<KNode> anyChildren = parent.getChildren(), tagChildren = parent.getChildrenOfTag(currentTag);
@@ -117,7 +110,7 @@ public class FeatureTypeHoleBased extends FeatureType {
         }
         // Header -- the parallel element at the top hole
         if (isAllowedDomain("header") && anyHoleTop) {
-          List<Integer> indices = Lists.newArrayList(singleAnyIndexStack);
+          List<Integer> indices = new ArrayList<>(singleAnyIndexStack);
           indices.set(indices.size() - 1, 0);       // Choose the top hole
           // Get the parallel element
           KNode node = parents.get(0);
@@ -140,11 +133,11 @@ public class FeatureTypeHoleBased extends FeatureType {
       // Header
       if (isAllowedDomain("header")) {
         String headword = LingUtils.findHeadWord(group.ex.phrase).toLowerCase();
-        for (Multiset.Entry<String> entry : headers.entrySet()) {
-          String header = entry.getElement();
+        for (Map.Entry<String, Integer> entry : headers.entrySet()) {
+          String header = entry.getKey();
           //LogInfo.logs("%s %s", header, group.sampleEntities());
           LingData headerLingData = LingData.get(header);
-          int n = opts.headerBinary ? 1 : entry.getCount();
+          int n = opts.headerBinary ? 1 : entry.getValue();
           for (int i = 0; i < n; i++) {
             for (int j = 0; j < headerLingData.length; j++) {
               String token = headerLingData.tokens.get(j);

@@ -2,13 +2,11 @@ package edu.stanford.nlp.semparse.open.ling;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Map;
-
-import com.google.common.base.Charsets;
-import com.google.common.collect.Maps;
+import java.util.*;
 
 import fig.basic.LogInfo;
 import fig.basic.Option;
@@ -30,11 +28,11 @@ public class WordVectorTable {
     if (wordVectors != null || opts.wordVectorFilename == null || opts.wordVectorFilename.isEmpty()) return;
     Path dataPath = Paths.get(opts.wordVectorFilename);
     LogInfo.logs("Reading word vectors from %s", dataPath);
-    try (BufferedReader in = Files.newBufferedReader(dataPath, Charsets.UTF_8)) {
+    try (BufferedReader in = Files.newBufferedReader(dataPath, Charset.forName("UTF-8"))) {
       String[] headerTokens = in.readLine().split(" ");
       numWords = Integer.parseInt(headerTokens[0]);
       numDimensions = Integer.parseInt(headerTokens[1]);
-      wordToIndex = Maps.newHashMap();
+      wordToIndex = new HashMap<>();
       wordVectors = new double[numWords][numDimensions];
       for (int i = 0; i < numWords; i++) {
         String[] tokens = in.readLine().split(" ");

@@ -1,9 +1,6 @@
 package edu.stanford.nlp.semparse.open.model.tree;
 
-import java.util.Collections;
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.*;
 
 import fig.basic.LogInfo;
 import fig.basic.StrUtils;
@@ -48,8 +45,8 @@ public class KNode {
   public KNode(KNode parent, Type type, String value, String fullText) {
     this.type = type;
     this.value = value;
-    this.children = Lists.newArrayList();
-    this.attributes = Lists.newArrayList();
+    this.children = new ArrayList<>();
+    this.attributes = new ArrayList<>();
     this.fullText = fullText;
     
     this.parent = parent;
@@ -99,7 +96,7 @@ public class KNode {
   }
   
   public List<KNode> getChildrenOfTag(String tag) {
-    List<KNode> answer = Lists.newArrayList();
+    List<KNode> answer = new ArrayList<>();
     for (KNode child : children) {
       if (child.type == Type.TAG && (tag.equals(child.value) || tag.equals("*"))) {
         answer.add(child);

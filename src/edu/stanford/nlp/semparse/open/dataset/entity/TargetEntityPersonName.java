@@ -1,16 +1,13 @@
 package edu.stanford.nlp.semparse.open.dataset.entity;
 
-import java.util.Collection;
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.*;
 
 public class TargetEntityPersonName implements TargetEntity {
   
   public final String first;
   public final String mid;
   public final String last;
-  final List<String> patterns = Lists.newArrayList();
+  final List<String> patterns = new ArrayList<>();
   
   public TargetEntityPersonName(String first, String last) {
     this.first = first;

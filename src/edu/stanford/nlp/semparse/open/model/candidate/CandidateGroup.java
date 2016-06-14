@@ -1,10 +1,6 @@
 package edu.stanford.nlp.semparse.open.model.candidate;
 
-import java.util.Collections;
-import java.util.List;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.dataset.Example;
 import edu.stanford.nlp.semparse.open.ling.AveragedWordVector;
@@ -35,13 +31,13 @@ public class CandidateGroup {
   
   public CandidateGroup(Example ex, List<KNode> selectedNodes) {
     this.ex = ex;
-    this.selectedNodes = ImmutableList.copyOf(selectedNodes);
-    List<String> entities = Lists.newArrayList();
+    this.selectedNodes = new ArrayList<>(selectedNodes);
+    List<String> entities = new ArrayList<>();
     for (KNode node : selectedNodes) {
       entities.add(LingUtils.normalize(node.fullText, opts.lateNormalizeEntities));
     }
-    predictedEntities = ImmutableList.copyOf(entities);
-    candidates = Lists.newArrayList();
+    predictedEntities = new ArrayList<>(entities);
+    candidates = new ArrayList<>();
   }
   
   public void initAveragedWordVector() {

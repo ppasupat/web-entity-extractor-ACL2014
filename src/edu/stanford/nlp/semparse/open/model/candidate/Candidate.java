@@ -1,9 +1,6 @@
 package edu.stanford.nlp.semparse.open.model.candidate;
 
-import java.util.List;
-import java.util.Map;
-
-import com.google.common.collect.Maps;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.dataset.Example;
 import edu.stanford.nlp.semparse.open.model.FeatureVector;
@@ -36,7 +33,7 @@ public class Candidate {
   }
   
   public Map<String, Double> getCombinedFeatures() {
-    Map<String, Double> map = Maps.newHashMap();
+    Map<String, Double> map = new HashMap<>();
     features.increment(1, map);
     group.features.increment(1, map);
     return map;

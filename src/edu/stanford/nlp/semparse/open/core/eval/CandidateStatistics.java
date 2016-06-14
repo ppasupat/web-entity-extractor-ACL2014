@@ -1,10 +1,6 @@
 package edu.stanford.nlp.semparse.open.core.eval;
 
-import java.util.List;
-import java.util.Set;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
 import fig.basic.Pair;
@@ -25,8 +21,8 @@ public class CandidateStatistics {
    * Convert Pair<Candidate, Double> to CandidateStatistics
    */
   public static List<CandidateStatistics> getRankedCandidateStats(List<Pair<Candidate, Double>> rankedCandidates) {
-    List<CandidateStatistics> answer = Lists.newArrayList();
-    Set<List<String>> foundPredictedEntities = Sets.newHashSet();
+    List<CandidateStatistics> answer = new ArrayList<>();
+    Set<List<String>> foundPredictedEntities = new HashSet<>();
     for (int rank = 0; rank < rankedCandidates.size(); rank++) {
       Pair<Candidate, Double> entry = rankedCandidates.get(rank);
       Candidate candidate = entry.getFirst();

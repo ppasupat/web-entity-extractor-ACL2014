@@ -1,10 +1,6 @@
 package edu.stanford.nlp.semparse.open.dataset;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
-import com.google.common.collect.Lists;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.dataset.entity.TargetEntity;
 import edu.stanford.nlp.semparse.open.dataset.entity.TargetEntityPersonName;
@@ -17,8 +13,8 @@ import fig.basic.LogInfo;
  * The examples are divided into training and test.
  */
 public class Dataset {
-  public final List<Example> trainExamples = Lists.newArrayList();
-  public final List<Example> testExamples = Lists.newArrayList();
+  public final List<Example> trainExamples = new ArrayList<>();
+  public final List<Example> testExamples = new ArrayList<>();
   
   public Dataset() {
     // Do nothing
@@ -63,7 +59,7 @@ public class Dataset {
    * The original Dataset is not modified.
    */
   public Dataset getNewShuffledDataset() {
-    List<Example> allExamples = Lists.newArrayList(trainExamples);
+    List<Example> allExamples = new ArrayList<>(trainExamples);
     allExamples.addAll(testExamples);
     Collections.shuffle(allExamples, new Random(42));
     List<Example> newTrain = allExamples.subList(0, trainExamples.size());
@@ -75,7 +71,7 @@ public class Dataset {
    * @return a new Dataset with the specified train/test ratio.
    */
   public Dataset getNewSplitDataset(double trainRatio) {
-    List<Example> allExamples = Lists.newArrayList(trainExamples);
+    List<Example> allExamples = new ArrayList<>(trainExamples);
     allExamples.addAll(testExamples);
     Collections.shuffle(allExamples, new Random(42));
     int trainEndIndex = (int) (allExamples.size() * trainRatio);
@@ -89,7 +85,7 @@ public class Dataset {
   // ============================================================
   
   public void cacheRewards() {
-    List<Example> uncached = Lists.newArrayList();
+    List<Example> uncached = new ArrayList<>();
     for (Example ex : trainExamples)
       if (!ex.expectedAnswer.frozenReward) uncached.add(ex);
     for (Example ex : testExamples)

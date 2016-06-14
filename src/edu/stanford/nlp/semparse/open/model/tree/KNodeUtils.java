@@ -1,9 +1,6 @@
 package edu.stanford.nlp.semparse.open.model.tree;
 
-import java.util.Collection;
-import java.util.Set;
-
-import com.google.common.collect.Sets;
+import java.util.*;
 
 public class KNodeUtils {
 
@@ -14,14 +11,14 @@ public class KNodeUtils {
     int minDepth = Integer.MAX_VALUE;
     for (KNode node : nodes)
       minDepth = Math.min(minDepth, node.depth);
-    Set<KNode> sameDepthAncestors = Sets.newHashSet();
+    Set<KNode> sameDepthAncestors = new HashSet<>();
     for (KNode node : nodes) {
       while (node.depth != minDepth) node = node.parent;
       sameDepthAncestors.add(node);
     }
     while (sameDepthAncestors.size() != 1) {
       if (minDepth == 0) return null;
-      Set<KNode> newSameDepthAncestors = Sets.newHashSet();
+      Set<KNode> newSameDepthAncestors = new HashSet<>();
       for (KNode node : sameDepthAncestors) newSameDepthAncestors.add(node.parent);
       sameDepthAncestors = newSameDepthAncestors;
     }

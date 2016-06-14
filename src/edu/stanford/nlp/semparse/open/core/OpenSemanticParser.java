@@ -1,8 +1,6 @@
 package edu.stanford.nlp.semparse.open.core;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.core.eval.CandidateStatistics;
 import edu.stanford.nlp.semparse.open.core.eval.EvaluationCase;
@@ -111,7 +109,7 @@ public class OpenSemanticParser {
   }
   
   private void extractData(List<Example> examples) {
-    List<Example> toExtract = Lists.newArrayList();
+    List<Example> toExtract = new ArrayList<>();
     for (Example ex : examples)
       if (ex.tree == null || ex.candidates == null)
         toExtract.add(ex);
@@ -141,7 +139,7 @@ public class OpenSemanticParser {
   }
   
   private void extractParallel(List<Example> examples) throws InterruptedException {
-    List<Runnable> tasks = Lists.newArrayList();
+    List<Runnable> tasks = new ArrayList<>();
     for (final Example ex : examples) {
       tasks.add(new Runnable() {
         @Override public void run() {
@@ -230,7 +228,7 @@ public class OpenSemanticParser {
       List<Pair<Candidate, Double>> rankedCandidates = learner.getRankedCandidates(ex);
       if (opts.useSeed) {
         // Only keep the candidates that contain the seed
-        List<Pair<Candidate, Double>> filteredRankedCandidates = Lists.newArrayList();
+        List<Pair<Candidate, Double>> filteredRankedCandidates = new ArrayList<>();
         TargetEntity seed = ex.expectedAnswer.targetEntities.get(1);
         for (Pair<Candidate, Double> pair : rankedCandidates) {
           List<String> predicted = pair.getFirst().predictedEntities;

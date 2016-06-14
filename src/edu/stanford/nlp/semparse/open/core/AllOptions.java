@@ -1,13 +1,7 @@
 package edu.stanford.nlp.semparse.open.core;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Set;
-
-import com.google.common.collect.Sets;
+import java.io.*;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.Main;
 import edu.stanford.nlp.semparse.open.dataset.ExpectedAnswer;
@@ -167,7 +161,7 @@ public class AllOptions {
     }
   }
   
-  private static Set<String> importantClasses = Sets.newHashSet(
+  private static Set<String> importantClasses = new HashSet<>(Arrays.asList(
       // Dataset
       "CandidateGenerator",
       "CandidateGroup",
@@ -193,13 +187,13 @@ public class AllOptions {
       "FeatureTypeNodeBased",
       "FeatureTypePathBased",
       "FeaturePostProcessorConjoin"
-      );
-  private static Set<String> importantOptions = Sets.newHashSet(
+      ));
+  private static Set<String> importantOptions = new HashSet<>(Arrays.asList(
       "LingData.annotators",
       "LingData.useAnnotators",
       "LingData.caseSensitive",
       "OpenSemanticParser.learner"
-      );
+      ));
 
   /**
    * Return true if the option is important for prediction (not for learning parameters).

@@ -1,15 +1,6 @@
 package edu.stanford.nlp.semparse.open.model.candidate;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.dataset.Example;
 import edu.stanford.nlp.semparse.open.model.feature.FeatureExtractor;
@@ -39,7 +30,7 @@ public class CandidateGenerator {
   }
   public static Options opts = new Options();
   
-  public final List<String> BLACKLISTED_TAGS = Lists.newArrayList(
+  public final List<String> BLACKLISTED_TAGS = Arrays.asList(
     "html", "head", "body", "script", "noscript", "link", "style"
   );
   
@@ -49,8 +40,8 @@ public class CandidateGenerator {
       return;
     }
     LogInfo.begin_track("Extracting candidates ...");
-    ex.candidateGroups = Lists.newArrayList();
-    ex.candidates = Lists.newArrayList();
+    ex.candidateGroups = new ArrayList<>();
+    ex.candidates = new ArrayList<>();
     new CandidatePopulator(ex).populateCandidates();
     LogInfo.logs("Found %d candidates (%d groups)", ex.candidates.size(), ex.candidateGroups.size());
     LogInfo.end_track();
@@ -88,10 +79,10 @@ public class CandidateGenerator {
       // Traverse the knowledge tree and collect all possible paths
       TreeTraverser traverser = opts.useAdvancedTreeTraverser ? new AdvancedTreeTraverser(rootNode)
           : new BasicTreeTraverser(rootNode);
-      Map<List<KNode>, CandidateGroup> nodesToCandidateGroup = Maps.newHashMap();
-      for (ImmutableList<PathEntry> path : traverser.getFoundPaths()) {
+      Map<List<KNode>, CandidateGroup> nodesToCandidateGroup = new HashMap<>();
+      for (List<PathEntry> path : traverser.getFoundPaths()) {
         // Execute the path and check if the path is valid.
-        List<KNode> nodes = Lists.newArrayList();
+        List<KNode> nodes = new ArrayList<>();
         PathUtils.executePath(path, rootNode, nodes);
         if (nodes.size() > opts.minNumCandidateEntity) {
           CandidateGroup group = nodesToCandidateGroup.get(nodes);
@@ -106,16 +97,16 @@ public class CandidateGenerator {
   }
   
   interface TreeTraverser {
-    public Collection<ImmutableList<PathEntry>> getFoundPaths();
+    public Collection<List<PathEntry>> getFoundPaths();
   }
 
   class BasicTreeTraverser implements TreeTraverser {
     List<PathEntry> ancestors;
-    Set<ImmutableList<PathEntry>> foundPaths;
+    Set<List<PathEntry>> foundPaths;
     
     public BasicTreeTraverser(KNode rootNode) {
-      ancestors = Lists.newArrayList();
-      foundPaths = Sets.newHashSet();
+      ancestors = new ArrayList<>();
+      foundPaths = new HashSet<>();
       traverseTree(rootNode);
     }
     
@@ -156,7 +147,7 @@ public class CandidateGenerator {
      */
     private void tweakPaths(int depth) {
       if (depth > opts.maxTweakDepth || depth >= ancestors.size()) {
-        foundPaths.add(ImmutableList.copyOf(ancestors));
+        foundPaths.add(new ArrayList<>(ancestors));
         return;
       }
       tweakPaths(depth + 1);
@@ -169,7 +160,7 @@ public class CandidateGenerator {
     }
     
     @Override
-    public Collection<ImmutableList<PathEntry>> getFoundPaths() {
+    public Collection<List<PathEntry>> getFoundPaths() {
       return foundPaths;
     }
   }
@@ -231,18 +222,18 @@ public class CandidateGenerator {
   
   class AdvancedTreeTraverser implements TreeTraverser {
     List<PathEntryAugmented> ancestors;
-    Set<ImmutableList<PathEntryAugmented>> foundRawPaths;
-    ImmutableList<PathEntryAugmented> currentRawPath;
+    Set<List<PathEntryAugmented>> foundRawPaths;
+    List<PathEntryAugmented> currentRawPath;
     List<PathEntry> currentTweakedPath;
-    Set<ImmutableList<PathEntry>> foundTweakedPaths;
+    Set<List<PathEntry>> foundTweakedPaths;
     
     public AdvancedTreeTraverser(KNode rootNode) {
-      ancestors = Lists.newArrayList();
-      foundRawPaths = Sets.newHashSet();
-      foundTweakedPaths = Sets.newHashSet();
+      ancestors = new ArrayList<>();
+      foundRawPaths = new HashSet<>();
+      foundTweakedPaths = new HashSet<>();
       traverseTree(rootNode);
       LogInfo.logs("Found %d raw paths", foundRawPaths.size());
-      for (ImmutableList<PathEntryAugmented> rawPath : foundRawPaths) {
+      for (List<PathEntryAugmented> rawPath : foundRawPaths) {
         //LogInfo.log(rawPath);
         currentRawPath = rawPath;
         createInitialTweakedPath();
@@ -270,14 +261,14 @@ public class CandidateGenerator {
     }
     
     private void savePath() {
-      foundRawPaths.add(ImmutableList.copyOf(ancestors));
+      foundRawPaths.add(new ArrayList<>(ancestors));
     }
     
     int numWildCards = 0;
     int numEndCuts = 0;
     
     private void createInitialTweakedPath() {
-      currentTweakedPath = Lists.newArrayList();
+      currentTweakedPath = new ArrayList<>();
       for (PathEntryAugmented entry : currentRawPath) {
         if (entry.numSiblingsOfTag == 1) {
           currentTweakedPath.add(new PathEntry(entry.tag));
@@ -296,7 +287,7 @@ public class CandidateGenerator {
     private void tweakPaths(int depth) {
       int n = currentTweakedPath.size();
       if (depth > opts.maxTweakDepth || depth >= n) {
-        foundTweakedPaths.add(ImmutableList.copyOf(currentTweakedPath));
+        foundTweakedPaths.add(new ArrayList<>(currentTweakedPath));
         return;
       }
       tweakPaths(depth + 1);
@@ -333,7 +324,7 @@ public class CandidateGenerator {
     }
     
     @Override
-    public Collection<ImmutableList<PathEntry>> getFoundPaths() {
+    public Collection<List<PathEntry>> getFoundPaths() {
       //debugPrint();
       return foundTweakedPaths;
     }
@@ -341,7 +332,7 @@ public class CandidateGenerator {
     protected void debugPrint() {
       if (CandidateGenerator.iter == 0) {
         LogInfo.begin_track("Found paths");
-        List<String> paths = Lists.newArrayList();
+        List<String> paths = new ArrayList<>();
         for (List<PathEntry> path : foundTweakedPaths) {
           paths.add(PathUtils.getXPathString(path));
         }

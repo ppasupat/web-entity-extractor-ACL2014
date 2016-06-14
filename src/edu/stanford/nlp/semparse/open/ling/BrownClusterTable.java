@@ -2,15 +2,12 @@ package edu.stanford.nlp.semparse.open.ling;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import fig.basic.LogInfo;
 import fig.basic.Option;
@@ -28,9 +25,9 @@ public class BrownClusterTable {
     if (wordClusterMap != null || opts.brownClusterFilename == null || opts.brownClusterFilename.isEmpty()) return;
     Path dataPath = Paths.get(opts.brownClusterFilename);
     LogInfo.logs("Reading Brown clusters from %s", dataPath);
-    try (BufferedReader in = Files.newBufferedReader(dataPath, Charsets.UTF_8)) {
-      wordClusterMap = Maps.newHashMap();
-      wordFrequencyMap = Maps.newHashMap();
+    try (BufferedReader in = Files.newBufferedReader(dataPath, Charset.forName("UTF-8"))) {
+      wordClusterMap = new HashMap<>();
+      wordFrequencyMap = new HashMap<>();
       String line = null;
       while ((line = in.readLine()) != null) {
         String[] tokens = line.split("\t");
@@ -57,7 +54,7 @@ public class BrownClusterTable {
   public static final int[] DEFAULT_PREFIXES = {4, 6, 10, 20};
   
   public static List<String> getDefaultClusterPrefixes(String cluster) {
-    List<String> answer = Lists.newArrayList();
+    List<String> answer = new ArrayList<>();
     if (cluster != null)
       for (int length : DEFAULT_PREFIXES)
         answer.add("[" + length + "]" + cluster.substring(0, Math.min(length, cluster.length())));
@@ -69,7 +66,7 @@ public class BrownClusterTable {
   }
   
   public static List<String> getDefaultClusterPrefixes(String cluster1, String cluster2) {
-    List<String> answer = Lists.newArrayList();
+    List<String> answer = new ArrayList<>();
     for (int length : DEFAULT_PREFIXES) {
       answer.add(cluster1.substring(0, Math.min(length, cluster1.length()))
           + "|" + cluster2.substring(0, Math.min(length, cluster2.length())));

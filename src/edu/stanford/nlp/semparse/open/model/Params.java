@@ -1,8 +1,5 @@
 package edu.stanford.nlp.semparse.open.model;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-
 import fig.basic.*;
 
 import java.io.BufferedReader;
@@ -135,7 +132,7 @@ public class Params {
       BufferedReader in = IOUtils.openIn(path);
       String line;
       while ((line = in.readLine()) != null) {
-        String[] pair = Lists.newArrayList(Splitter.on('\t').split(line)).toArray(new String[2]);
+        String[] pair = line.split("\t");
         weights.put(pair[0], Double.parseDouble(pair[1]));
       }
       in.close();
@@ -149,7 +146,7 @@ public class Params {
   public void write(PrintWriter out) { write(null, out); }
 
   public void write(String prefix, PrintWriter out) {
-    List<Map.Entry<String, Double>> entries = Lists.newArrayList(weights.entrySet());
+    List<Map.Entry<String, Double>> entries = new ArrayList<>(weights.entrySet());
     Collections.sort(entries, new ValueComparator<String, Double>(true));
     for (Map.Entry<String, Double> entry : entries) {
       double value = entry.getValue();
@@ -171,7 +168,7 @@ public class Params {
 
   public void log() {
     LogInfo.begin_track("Params");
-    List<Map.Entry<String, Double>> entries = Lists.newArrayList(weights.entrySet());
+    List<Map.Entry<String, Double>> entries = new ArrayList<>(weights.entrySet());
     Collections.sort(entries, new ValueComparator<String, Double>(true));
     for (Map.Entry<String, Double> entry : entries) {
       double value = entry.getValue();

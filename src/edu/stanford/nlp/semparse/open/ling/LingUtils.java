@@ -1,14 +1,9 @@
 package edu.stanford.nlp.semparse.open.ling;
 
 import java.text.Normalizer;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.base.CharMatcher;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import fig.basic.LogInfo;
 
@@ -81,7 +76,7 @@ public class LingUtils {
   public static final Pattern ALPHANUMERIC = Pattern.compile("[A-Za-z0-9]+");
   
   public static Set<String> getBagOfWords(String string) {
-    Set<String> answer = Sets.newHashSet();
+    Set<String> answer = new HashSet<>();
     Matcher matcher = ALPHANUMERIC.matcher(string.replaceAll("[0-9]+", "0"));
     while (matcher.find()) {
       answer.add(matcher.group());
@@ -92,7 +87,7 @@ public class LingUtils {
   public static final Pattern ALPHA_OR_NUMERIC = Pattern.compile("[a-z]+|[0-9]+");
   
   public static List<String> getAlphaOrNumericTokens(String string) {
-    List<String> answer = Lists.newArrayList();
+    List<String> answer = new ArrayList<>();
     Matcher matcher = ALPHA_OR_NUMERIC.matcher(string.toLowerCase());
     while (matcher.find()) {
       answer.add(matcher.group());
@@ -101,7 +96,7 @@ public class LingUtils {
   }
   
   public static String whitespaceNormalize(String x) {
-    return CharMatcher.WHITESPACE.trimAndCollapseFrom(x, ' ');
+    return x.replaceAll("\\s+", " ").trim();
   }
   
   /**

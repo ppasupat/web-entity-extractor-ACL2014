@@ -1,17 +1,11 @@
 package edu.stanford.nlp.semparse.open.dataset.library;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.*;
+import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Charsets;
-import com.google.common.collect.Lists;
 
 import edu.stanford.nlp.semparse.open.dataset.CriteriaExactMatch;
 import edu.stanford.nlp.semparse.open.dataset.CriteriaGeneralWeb;
@@ -88,8 +82,8 @@ public class JSONDatasetReader {
     
     // Single dataset
     Path path = Paths.get("datasets", family, name + ".json");
-    List<Example> examples = Lists.newArrayList();
-    try (BufferedReader reader = Files.newBufferedReader(path, Charsets.UTF_8)) {
+    List<Example> examples = new ArrayList<>();
+    try (BufferedReader reader = Files.newBufferedReader(path, Charset.forName("UTF-8"))) {
       LogInfo.begin_track("Reading dataset from %s", path);
       // Read the JSON file
       ObjectMapper mapper = new ObjectMapper();
@@ -151,7 +145,7 @@ public class JSONDatasetReader {
       // Use exact matching (0-1 loss / exact match on all entities)
       if (verbose)
         LogInfo.log("Using 0-1 loss (must match all entities to get reward = 1)");
-      List<TargetEntity> targetEntities = Lists.newArrayList();
+      List<TargetEntity> targetEntities = new ArrayList<>();
       for (String entity : datum.entities)
         targetEntities.add(getTargetEntity(entity));
       return new ExpectedAnswerCriteriaMatch(new CriteriaExactMatch(targetEntities));
@@ -165,7 +159,7 @@ public class JSONDatasetReader {
           ExpectedAnswerInjectiveMatch.opts.irCriterion,
           ExpectedAnswerInjectiveMatch.opts.irThreshold);
     // Convert each entity string to TargetEntity
-    List<TargetEntity> targetEntities = Lists.newArrayList();
+    List<TargetEntity> targetEntities = new ArrayList<>();
     for (String entity : datum.entities)
       targetEntities.add(getTargetEntity(entity));
     return new ExpectedAnswerInjectiveMatch(targetEntities);

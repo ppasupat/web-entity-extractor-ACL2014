@@ -1,17 +1,12 @@
 package edu.stanford.nlp.semparse.open.model.feature;
 
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Sets;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.model.FeatureVector;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
 import edu.stanford.nlp.semparse.open.model.candidate.CandidateGroup;
 import edu.stanford.nlp.semparse.open.model.tree.KNode;
+import edu.stanford.nlp.semparse.open.util.Multiset;
 import fig.basic.Option;
 
 /**
@@ -42,14 +37,14 @@ public class FeatureTypeNodeBased extends FeatureType {
     if (isAllowedDomain("self-or-ancestors")) {
       FeatureVector v = new FeatureVector();
       // Majority id / class / number of children of the nodes and parents
-      Set<KNode> currentKNodes = Sets.newHashSet(group.selectedNodes);
+      Set<KNode> currentKNodes = new HashSet<>(group.selectedNodes);
       for (int ancestorCount = 0; ancestorCount < FeatureType.opts.maxAncestorCount; ancestorCount++) {
-        Multiset<String> countTag = HashMultiset.create(),
-                          countId = HashMultiset.create(),
-                       countClass = HashMultiset.create(),
-                 countNumChildren = HashMultiset.create();
-        Multiset<Integer> countChildIndex = HashMultiset.create();
-        Set<KNode> parents = Sets.newHashSet();
+        Multiset<String> countTag = new Multiset<>(),
+                          countId = new Multiset<>(),
+                       countClass = new Multiset<>(),
+                 countNumChildren = new Multiset<>();
+        Multiset<Integer> countChildIndex = new Multiset<>();
+        Set<KNode> parents = new HashSet<>();
         for (KNode node : currentKNodes) {
           // Properties of the current node
           countTag.add(node.value);
@@ -107,7 +102,7 @@ public class FeatureTypeNodeBased extends FeatureType {
       }
       // Add features
       if (opts.soaAverage) {
-        for (Entry<String, Double> entry : v.toMap().entrySet()) {
+        for (Map.Entry<String, Double> entry : v.toMap().entrySet()) {
           group.features.addFromString(entry.getKey(), entry.getValue() / FeatureType.opts.maxAncestorCount);
         }
       } else {

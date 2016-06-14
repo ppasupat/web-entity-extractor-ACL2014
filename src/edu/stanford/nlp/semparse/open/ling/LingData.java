@@ -4,11 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -20,9 +16,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
@@ -47,7 +40,7 @@ import fig.basic.Option;
 public class LingData {
   public static class Options {
     @Option(gloss = "What CoreNLP annotators to run")
-    public List<String> annotators = Lists.newArrayList("tokenize", "ssplit", "pos", "lemma", "ner");
+    public List<String> annotators = Arrays.asList("tokenize", "ssplit", "pos", "lemma", "ner");
 
     @Option(gloss = "Whether to use CoreNLP annotators")
     public boolean useAnnotators = true;
@@ -67,14 +60,14 @@ public class LingData {
   // Update this when changing LingData's structure.
   private static final String VERSION = "4";
   
-  private static final Set<String> AUX_VERBS = Sets.newHashSet(
+  private static final Set<String> AUX_VERBS = new HashSet<>(Arrays.asList(
       "is", "are", "was", "were", "am", "be", "been", "will",
       "shall", "have", "has", "had", "would", "could", "should", 
-      "do", "does", "did", "can", "may", "might", "must", "seem");
+      "do", "does", "did", "can", "may", "might", "must", "seem"));
   
-  public static final Set<String> OPEN_CLASS_POS_TAGS = Sets.newHashSet(
+  public static final Set<String> OPEN_CLASS_POS_TAGS = new HashSet<>(Arrays.asList(
       "CD", "FW", "JJ", "JJR", "JJS", "NN", "NNP", "NNPS", "NNS", "RB",
-      "RBR", "RBS", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ");
+      "RBR", "RBS", "VB", "VBD", "VBG", "VBN", "VBP", "VBZ"));
   
   /**
    * OPEN = nouns, general verbs, adjectives, adverbs, numbers
@@ -200,7 +193,7 @@ public class LingData {
     if (pipeline != null) return;
     LogInfo.begin_track("Initializing Core NLP Models ...");
     Properties props = new Properties();
-    props.put("annotators", Joiner.on(',').join(opts.annotators));
+    props.put("annotators", String.join(",", opts.annotators));
     if (opts.caseSensitive) {
       props.put("pos.model", "edu/stanford/nlp/models/pos-tagger/english-bidirectional/english-bidirectional-distsim.tagger");
       props.put("ner.model", "edu/stanford/nlp/models/ner/english.all.3class.distsim.crf.ser.gz,edu/stanford/nlp/models/ner/english.conll.4class.distsim.crf.ser.gz");
@@ -357,7 +350,7 @@ public class LingData {
    * @return A set of tokens
    */
   public Set<String> getTokens(boolean lemmatized, boolean onlyOpenPOS) {
-    Set<String> answer = Sets.newHashSet();
+    Set<String> answer = new HashSet<>();
     for (int i = 0; i < length; i++) {
       if (!onlyOpenPOS || posTypes.get(i) == POSType.OPEN) {
         if (lemmatized) {

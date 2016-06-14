@@ -1,8 +1,6 @@
 package edu.stanford.nlp.semparse.open.model.feature;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.model.FeatureVector;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
@@ -14,7 +12,7 @@ import edu.stanford.nlp.semparse.open.model.candidate.CandidateGroup;
  */
 public class FeatureExtractor {
 
-  protected final List<FeatureType> featureTypes = Lists.newArrayList(
+  protected final List<FeatureType> featureTypes = Arrays.asList(
       new FeatureTypeNaiveEntityBased(),
       new FeatureTypeNodeBased(),
       new FeatureTypePathBased(),
@@ -23,7 +21,7 @@ public class FeatureExtractor {
       new FeatureTypeHoleBased()
       //new FeatureTypeCutRange()
       );
-  protected final List<FeaturePostProcessor> featurePostProcessors = Lists.newArrayList(
+  protected final List<FeaturePostProcessor> featurePostProcessors = Arrays.asList(
       (FeaturePostProcessor) new FeaturePostProcessorConjoin());
   
   public void extract(Candidate candidate) {

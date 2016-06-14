@@ -1,15 +1,13 @@
 package edu.stanford.nlp.semparse.open.util;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 
 import fig.basic.Utils;
 
@@ -57,7 +55,7 @@ public class WebUtils {
       query = query.replaceAll("'", "'\"'\"'");
       String contents = Utils.systemGetStringOutput("./scripts/google-search.py '" + query + "'");
       JsonNode root = jsonMapper.readTree(contents.getBytes("UTF-8"));
-      List<SearchResult> pages = Lists.newArrayList();
+      List<SearchResult> pages = new ArrayList<>();
       for (JsonNode item : root) {
         pages.add(new SearchResult(query, item.get(0).asText(), item.get(1).asText()));
       }
@@ -77,7 +75,7 @@ public class WebUtils {
       query = query.replaceAll("'", "'\"'\"'");
       String contents = Utils.systemGetStringOutput("./scripts/fake-google-search.py '" + query + "'");
       JsonNode root = jsonMapper.readTree(contents.getBytes("UTF-8"));
-      List<SearchResult> pages = Lists.newArrayList();
+      List<SearchResult> pages = new ArrayList<>();
       for (JsonNode item : root) {
         pages.add(new SearchResult(query, item.get("link").asText(), item.get("title").asText()));
       }

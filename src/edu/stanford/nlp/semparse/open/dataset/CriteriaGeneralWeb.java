@@ -1,8 +1,6 @@
 package edu.stanford.nlp.semparse.open.dataset;
 
-import java.util.List;
-
-import com.google.common.collect.Lists;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.dataset.entity.TargetEntity;
 import edu.stanford.nlp.semparse.open.dataset.entity.TargetEntityNearMatch;
@@ -24,7 +22,7 @@ public class CriteriaGeneralWeb implements Criteria {
 
   @Override
   public List<TargetEntity> getTargetEntities() {
-    return Lists.newArrayList(first, second, last);
+    return Arrays.asList(first, second, last);
   }
 
   @Override

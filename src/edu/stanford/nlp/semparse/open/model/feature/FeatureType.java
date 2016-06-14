@@ -1,11 +1,6 @@
 package edu.stanford.nlp.semparse.open.model.feature;
 
-import java.util.List;
-import java.util.Set;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Sets;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.ling.BrownClusterTable;
 import edu.stanford.nlp.semparse.open.ling.LingData;
@@ -14,6 +9,7 @@ import edu.stanford.nlp.semparse.open.model.FeatureVector;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
 import edu.stanford.nlp.semparse.open.model.candidate.CandidateGroup;
 import edu.stanford.nlp.semparse.open.model.tree.KNode;
+import edu.stanford.nlp.semparse.open.util.Multiset;
 import fig.basic.LogInfo;
 import fig.basic.Option;
 
@@ -29,10 +25,10 @@ import fig.basic.Option;
 public abstract class FeatureType {
   public static class Options {
     @Option(gloss = "Set of feature domains to exclude")
-    public List<String> excludeFeatureDomains = Lists.newArrayList();
+    public List<String> excludeFeatureDomains = new ArrayList<>();
 
     @Option(gloss = "Set of feature domains to include")
-    public List<String> includeFeatureDomains = Lists.newArrayList();
+    public List<String> includeFeatureDomains = new ArrayList<>();
     
     @Option(gloss = "If true, look at excludeFeatureDomains, otherwise look at includeFeatureDomains")
     public boolean useAllFeatures = true;
@@ -76,7 +72,7 @@ public abstract class FeatureType {
   public abstract void extract(Candidate candidate);
   public abstract void extract(CandidateGroup group);
   
-  public static Set<String> registeredNonBasicDomains = Sets.newHashSet(
+  public static Set<String> registeredNonBasicDomains = new HashSet<>(Arrays.asList(
       // (Structural) Node-based
       "self-or-ancestors", "node-range",
       // (Structural) Path-based
@@ -95,7 +91,7 @@ public abstract class FeatureType {
       "hole",
       // (Denotation) Header and Proximity
       "header"
-      );
+      ));
   
   public static void checkFeatureTypeOptionsSanity() {
     if (opts.useAllFeatures && !opts.includeFeatureDomains.isEmpty())
@@ -269,8 +265,8 @@ public abstract class FeatureType {
    */
   protected <T> int maxDuplication(Multiset<T> multiset) {
     int max = 0;
-    for (Multiset.Entry<T> entry : multiset.entrySet())
-      max = Math.max(max, entry.getCount());
+    for (Map.Entry<T, Integer> entry : multiset.entrySet())
+      max = Math.max(max, entry.getValue());
     return max;
   }
   
@@ -289,11 +285,11 @@ public abstract class FeatureType {
   protected <T> T getAbsoluteMajority(Multiset<T> multiset) {
     T majority = null;
     int majorityCount = 0;
-    for (Multiset.Entry<T> entry : multiset.entrySet()) {
-      if (entry.getCount() > majorityCount) {
-        majority = entry.getElement();
-        majorityCount = entry.getCount();
-      } else if (entry.getCount() == majorityCount) {
+    for (Map.Entry<T, Integer> entry : multiset.entrySet()) {
+      if (entry.getValue() > majorityCount) {
+        majority = entry.getKey();
+        majorityCount = entry.getValue();
+      } else if (entry.getValue() == majorityCount) {
         majority = null;
       }
     }
@@ -309,8 +305,8 @@ public abstract class FeatureType {
   protected <T> double getEntropy(Multiset<T> multiset) {
     if (multiset.elementSet().size() == 1) return 0.0;
     double entropy = 0.0;
-    for (Multiset.Entry<T> entry : multiset.entrySet()) {
-      double p = 1.0 * entry.getCount() / multiset.size();
+    for (Map.Entry<T, Integer> entry : multiset.entrySet()) {
+      double p = 1.0 * entry.getValue() / multiset.size();
       entropy -= p * Math.log(p);
     }
     return entropy;
@@ -355,8 +351,9 @@ public abstract class FeatureType {
   protected <T> void addVotingFeatures(FeatureVector v, String domain, String name, Multiset<T> multiset,
       boolean bagOfWords, boolean addMajorityEvenIfSingle) {
     if (opts.noAggregation) {
-      for (T stuff : multiset) {
-        v.add(domain, name + " = " + stuff);
+      for (Map.Entry<T, Integer> entry : multiset.entrySet()) {
+        for (int i = 0; i < entry.getValue(); i++)
+          v.add(domain, name + " = " + entry.getKey());
       }
       return;
     }

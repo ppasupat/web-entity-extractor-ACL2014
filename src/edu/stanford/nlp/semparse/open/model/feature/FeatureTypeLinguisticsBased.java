@@ -1,16 +1,13 @@
 package edu.stanford.nlp.semparse.open.model.feature;
 
-import java.util.Set;
-
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Sets;
+import java.util.*;
 
 import edu.stanford.nlp.semparse.open.ling.BrownClusterTable;
 import edu.stanford.nlp.semparse.open.ling.LingData;
 import edu.stanford.nlp.semparse.open.ling.LingUtils;
 import edu.stanford.nlp.semparse.open.model.candidate.Candidate;
 import edu.stanford.nlp.semparse.open.model.candidate.CandidateGroup;
+import edu.stanford.nlp.semparse.open.util.Multiset;
 import fig.basic.Option;
 
 /**
@@ -42,11 +39,11 @@ public class FeatureTypeLinguisticsBased extends FeatureType {
   protected void extractLingFeatures(CandidateGroup group) {
     if (isAllowedDomain("ling")) {
       // Counts!
-      Multiset<String> countWordPOS = HashMultiset.create(),
-                     countEntityPOS = HashMultiset.create(),
-            countEntityCollapsedPOS = HashMultiset.create(),
-                    countFirstToken = HashMultiset.create(),
-                     countLastToken = HashMultiset.create();
+      Multiset<String> countWordPOS = new Multiset<>(),
+                     countEntityPOS = new Multiset<>(),
+            countEntityCollapsedPOS = new Multiset<>(),
+                    countFirstToken = new Multiset<>(),
+                     countLastToken = new Multiset<>();
       for (String entity : group.predictedEntities) {
         LingData lingData = LingData.get(entity);
         if (lingData.length > 0) {
@@ -89,14 +86,14 @@ public class FeatureTypeLinguisticsBased extends FeatureType {
   protected void extractClusterFeatures(CandidateGroup group) {
     if (isAllowedDomain("cluster")) {
       // Query cluster prefixes 
-      Set<String> queryClusters = Sets.newHashSet(),
-                 entityPrefixes = Sets.newHashSet();
+      Set<String> queryClusters = new HashSet<>(),
+                 entityPrefixes = new HashSet<>();
       for (String token : LingData.get(group.ex.phrase).getTokens(true, true)) {
         queryClusters.addAll(BrownClusterTable.getDefaultClusterPrefixesFromWord(token));
         queryClusters.add(token);  // Also add the raw token
       }
       // Entity cluster
-      Multiset<String> entityTokenClusters = HashMultiset.create();
+      Multiset<String> entityTokenClusters = new Multiset<>();
       for (String entity : group.predictedEntities) {
         for (String token : LingData.get(entity).tokens) {
           String cluster = BrownClusterTable.getCluster(token);
